@@ -43,7 +43,7 @@ export default {
 
         async registerOrganization() {
             try {
-                const response = await axiosClient.post('/organization', this.form);
+                const response = await axiosClient.post('/organization/registerOrganization', this.form);
                 if (response.data.success) {
                     alert('Organization registered successfully');
                     this.form = {
@@ -55,7 +55,8 @@ export default {
                     this.error = response.data.message;
                 }
             } catch (error) {
-                this.error = 'An error occurred while registering the organization.';
+                const message = error.response.data.message
+                this.error = message;
                 console.error(error);
             }
         }
