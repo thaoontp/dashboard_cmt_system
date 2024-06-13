@@ -11,6 +11,7 @@ import LoginAdmin from "../views/LoginAdmin/LoginAdmin.vue"
 import HomeAdmin from "@/views/HomeAdmin/MainHome/Home.vue"
 import User from "@/views/HomeAdmin/User/User.vue"
 
+
 import RegisterOrgan from "../views/Organizations/RegisterOrgan/RegisterOrgan.vue"
 import HomeOrgan from "../views/Organizations/HomeOrgan/HomeOrgan.vue"
 import LoginOrgan from "../views/Organizations/LoginOrgan/LoginOrgan.vue"

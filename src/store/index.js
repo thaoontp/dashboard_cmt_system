@@ -1,7 +1,6 @@
 import { createStore } from 'vuex';
 import axios from '../api/axiosClient';
 
-
 const store = createStore({
   state: {
     isLoggedIn: false,

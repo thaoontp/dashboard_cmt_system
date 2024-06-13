@@ -36,7 +36,7 @@
   </template>
   
   <script>
-  import axiosClient from '../../../api/axiosClient'; // Đường dẫn tới file axiosClient.js
+  import axiosClient from '../../../api/axiosClient';
   
   export default {
 	data() {
