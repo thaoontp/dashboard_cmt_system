@@ -18,7 +18,7 @@ const store = createStore({
     }
   },
   actions: {
-    async login({ commit, dispatch }, credentials) {
+    async login({ commit }, credentials) {
       try {
         const response = await axios.post("/user/loginUser", {
           USERNAME: credentials.username,
@@ -31,7 +31,6 @@ const store = createStore({
           if (user.ROLE.IS_ADMIN) {
             localStorage.setItem("token", token);
             commit('SET_LOGIN_STATE', user);
-            dispatch('getUserInfo');
             return true;
           } else {
             alert("Bạn không có quyền truy cập với tài khoản này.");
@@ -45,16 +44,14 @@ const store = createStore({
     },
     async getUserInfo({ commit }) {
       try {
-        console.log("Starting getUserInfo action");
-        const response = await axios.get("/user/info");
-        console.log("API response:", response);
-        if (response.status >= 200 && response.status < 300) {
+        const response = await axios.get("/user/info", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`
+          }
+        });
+        if (response.status >= 200 && response.status <= 300) {
           const userInfo = response.data;
-          console.log("User info:", userInfo);
-          commit('SET_LOGIN_STATE', userInfo);
-          
-        } else {
-          console.error("Unexpected response status:", response.status);
+          commit('SET_LOGIN_STATE', userInfo); 
         }
       } catch (error) {
         console.error("Error while getting user info:", error);
@@ -69,7 +66,7 @@ const store = createStore({
   },
   getters: {
     isLoggedIn: (state) => state.isLoggedIn,
-    userInfo: (state) => state.userInfo 
+    userInfo: (state) => state.userInfo // Sửa tên getter thành userInfo để khớp với state
   }
 });
 
