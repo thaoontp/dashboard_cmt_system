@@ -42,8 +42,12 @@
 		  <template #icon>
 			<AppstoreOutlined />
 		  </template>
-		  <a-menu-item key="5">Option 5</a-menu-item>
-		  <a-menu-item key="6">Option 6</a-menu-item>
+		  <a-menu-item key="5">
+			<router-link to="/organization/register">Register Organization</router-link>
+		</a-menu-item>
+		  <a-menu-item key="6">
+			<router-link to="/organization/getUserByOrganization">Register Organization</router-link>
+		</a-menu-item>
 		  <a-sub-menu key="sub3" title="Submenu">
 			<a-menu-item key="7">Option 7</a-menu-item>
 			<a-menu-item key="8">Option 8</a-menu-item>
@@ -83,10 +87,10 @@
   </template>
   
   <script setup>	
-  import { ref } from 'vue';
-  import logoURL from '../../assets/logo.png';
-  import { useRouter } from 'vue-router';
-  import { MailOutlined, AppstoreOutlined, SettingOutlined } from '@ant-design/icons-vue';
+  import { AppstoreOutlined, MailOutlined, SettingOutlined } from '@ant-design/icons-vue';
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import logoURL from '../../assets/logo.png';
   
   
   const theme = ref('dark');
