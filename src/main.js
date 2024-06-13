@@ -2,7 +2,7 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
-
+import { Menu, Switch } from 'ant-design-vue';
 import Antd from 'ant-design-vue'
 
 import 'bootstrap/dist/css/bootstrap.min.css'
@@ -22,3 +22,5 @@ app.use(store)
 app.use(router)
 app.mount('#app')
 app.use(Antd)
+app.use(Menu);
+app.use(Switch);

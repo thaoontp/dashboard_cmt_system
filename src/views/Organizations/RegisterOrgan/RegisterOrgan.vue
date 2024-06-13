@@ -60,7 +60,7 @@
 							required
 						  />
 						</div>
-						<div class="group">
+						<!-- <div class="group">
 						  <label for="birth"
 							><i class="fa-solid fa-user iconForm"></i
 						  ></label>
@@ -73,8 +73,8 @@
 							autocomplete="off"
 							required
 						  />
-						</div>
-						<div class="group">
+						</div> -->
+						<!-- <div class="group">
 						  <label for="sex"
 							><i class="fa-solid fa-user-tie iconForm"></i
 						  ></label>
@@ -89,9 +89,9 @@
 							<option value="Nam">Nam</option>
 							<option value="Nữ">Nữ</option>
 						  </select>
-						</div>
+						</div> -->
   
-						<div class="group">
+						<!-- <div class="group">
 						  <label for="address"
 							><i class="fa-solid fa-map iconForm"></i
 						  ></label>
@@ -105,7 +105,7 @@
 							placeholder="Nhập địa chỉ"
 							required
 						  />
-						</div>
+						</div> -->
 						<div class="group2">
 						  <label for="password"
 							><i class="fa-solid fa-lock iconForm"></i
@@ -129,7 +129,7 @@
 							</div>
 						  </div>
 						</div>
-						<div class="group">
+						<!-- <div class="group">
 						  <label for="avatar"
 							><i class="fa-solid fa-image iconForm"></i
 						  ></label>
@@ -144,7 +144,7 @@
 							ref="imageInput"
 							@change="handleFileUpload"
 						  />
-						</div>
+						</div> -->
 						<div class="pt-1 mb-4">
 						  <button class="btnPay" type="submit">SIGN UP</button>
 						</div>
