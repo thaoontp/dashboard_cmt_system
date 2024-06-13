@@ -50,6 +50,7 @@
 	mounted() {
 	  this.fetchDashboardData();
 	},
+	
 	methods: {
 	  fetchDashboardData() {
 		axiosClient.get('/user/totalUser')

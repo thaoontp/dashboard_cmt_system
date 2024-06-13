@@ -114,8 +114,7 @@
     },
     mounted() {
 	  this.fetchUsers();
-	},
-  
+	}, 
     methods: {
       async fetchUsers() {
         try {
