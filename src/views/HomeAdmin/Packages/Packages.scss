@@ -1,0 +1,70 @@
+.package-management {
+	padding: 20px 30px;
+  }
+
+.btnAdd {
+    padding: 8px 14px;
+    border-radius: 20px;
+    background-color: #198754;
+    // background-image: linear-gradient(to right, #002938e2, #0CBABA);
+    color: #fff;
+    box-shadow: 0px 5px 5px rgb(195, 183, 183);
+    &:hover {
+      opacity: 0.8;
+    }
+}
+  
+.package-list {
+    display: flex;
+	flex-wrap: wrap;
+}
+  
+.package-card {
+	border: 1px solid #ccc;
+	border-radius: 5px;
+	padding: 10px;
+	margin: 10px;
+	width: 300px;
+}
+  
+.btn-add-package {
+	margin-bottom: 20px;
+}
+  
+.btn-update,
+.btn-delete {
+	margin-top: 10px;
+}
+
+.actionItem {
+    position: relative;
+    right: 2%;
+    bottom: 4%;
+    .edit,
+    .remove {
+      padding: 4px 12px;
+      border-radius: 4px;
+      color: #fff;
+
+      &:hover {
+        cursor: pointer;
+        scale: 1.05;
+      }
+    }
+    .edit {
+      margin-right: 10px;
+      background-color: #309bff;
+    }
+    .remove {
+      background-color: rgb(213, 12, 12);
+    }
+  }
+
+  .groupForm {
+    margin-bottom: 15px;
+  }
+  .inputGroup {
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+  }

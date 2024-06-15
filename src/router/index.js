@@ -10,7 +10,7 @@ import RegisterUser from "@/views/RegisterUser/RegisterUser.vue"
 import LoginAdmin from "../views/LoginAdmin/LoginAdmin.vue"
 import HomeAdmin from "@/views/HomeAdmin/MainHome/Home.vue"
 import User from "@/views/HomeAdmin/User/User.vue"
-
+import Packages from "@/views/HomeAdmin/Packages/Packages.vue"
 
 import RegisterOrgan from "../views/Organizations/RegisterOrgan/RegisterOrgan.vue"
 import HomeOrgan from "../views/Organizations/HomeOrgan/HomeOrgan.vue"
@@ -39,6 +39,13 @@ const routes = [
 	{
 		path: "/user",
 		component: User,
+		meta: {
+			layout: AdminLayout,
+		}
+	},
+	{
+		path: "/package",
+		component: Packages,
 		meta: {
 			layout: AdminLayout,
 		}
