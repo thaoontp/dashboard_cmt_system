@@ -20,8 +20,8 @@ app.use(store)
 app.use(router)
 app.use(Antd)
 
-app.use(Menu);
-app.use(Switch);
+// app.use(Menu);
+// app.use(Switch);
 
 app.mount('#app')
 
