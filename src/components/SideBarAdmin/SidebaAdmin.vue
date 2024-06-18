@@ -43,13 +43,15 @@
 			<router-link to="/organization/register">Register Organization</router-link>
 		</a-menu-item>
 		  <a-menu-item key="6">
-			<router-link to="/organization/getUserByOrganization">Register Organization</router-link>
+			<router-link to="/organization/getOrganization">Organization List</router-link>
 		</a-menu-item>
-		  <a-sub-menu key="sub3" title="Submenu">
-			<a-menu-item key="7">Option 7</a-menu-item>
-			<a-menu-item key="8">Option 8</a-menu-item>
+			<!-- <a-menu-item key="7">
+				<router-link to="/organization/getUserByOrganization">Get User For Organization</router-link>
+			</a-menu-item> -->
+			<!-- <a-menu-item key="8">
+				<router-link to="/organization/loginToOrganization">Login To Organization</router-link>
+			</a-menu-item> -->
 		  </a-sub-menu>
-		</a-sub-menu>
 		<a-sub-menu key="sub4" title="Setting">
 		  <template #icon>
 			<SettingOutlined />
