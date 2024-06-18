@@ -33,124 +33,81 @@
   
 	  <!-- Modal thêm gói -->
 	  <a-modal
-		style="top: 40px"
-		v-model:open="showAddModal"
-		width="800px"
-		title="Thêm gói"
-		@ok="handleAddPackage"
-		@cancel="handleCancel"
-		okText="Thêm gói"
-		cancelText="Đóng"
-	  >
-		<form @submit.prevent="handleAddPackage">
-		  <div class="contentModal row">
-			<div class="rightModal col">
-			  <div class="groupForm">
-				<span>Tiêu đề:</span>
-				<input
-				  type="text"
-				  class="inputGroup"
-				  v-model="newPackage.TITLE"
-				  name="title"
-				  placeholder="Title"
-				  autocomplete="off"
-				  required
-				/>
-			  </div>
-			  <div class="groupForm">
-				<span>Cấp độ:</span>
-				<input
-				  type="number"
-				  class="inputGroup"
-				  v-model="newPackage.LEVEL"
-				  name="level"
-				  placeholder="Level"
-				  min="1"
-				  autocomplete="off"
-				  required
-				/>
-			  </div>
-			  <div class="groupForm">
-				<span>Giá:</span>
-				<input
-				  type="number"
-				  class="inputGroup"
-				  v-model="newPackage.COST"
-				  name="cost"
-				  placeholder="Cost"
-				  min="0"
-				  autocomplete="off"
-				  required
-				/>
-			  </div>
-			  <div class="groupForm">
-				<span>Số lượng sản phẩm:</span>
-				<input
-				  type="number"
-				  class="inputGroup"
-				  v-model="newPackage.NUMBER_OF_PRODUCT"
-				  name="numberOfProduct"
-				  placeholder="Number of Product"
-				  min="0"
-				  autocomplete="off"
-				  required
-				/>
-			  </div>
-			  <div class="groupForm">
-				<span>Số lượt bình luận:</span>
-				<input
-				  type="number"
-				  class="inputGroup"
-				  v-model="newPackage.NUMBER_OF_COMMENT"
-				  name="numberOfComment"
-				  placeholder="Number of Comment"
-				  min="0"
-				  autocomplete="off"
-				  required
-				/>
-			  </div>
-			  <div class="groupForm">
-				<span>Mô tả:</span>
-				<textarea
-				  class="inputGroup"
-				  v-model="newPackage.DESCRIPTION"
-				  name="description"
-				  placeholder="Description"
-				  autocomplete="off"
-				  required
-				></textarea>
-			  </div>
-			  <div class="groupForm">
-				<span>Giảm giá (%):</span>
-				<input
-				  type="number"
-				  class="inputGroup"
-				  v-model="newPackage.DISCOUNT"
-				  name="discount"
-				  placeholder="Discount"
-				  min="0"
-				  max="100"
-				  autocomplete="off"
-				  required
-				/>
-			  </div>
-			  <div class="groupForm">
-				<span>Thời gian (tháng):</span>
-				<input
-				  type="number"
-				  class="inputGroup"
-				  v-model="newPackage.MONTH"
-				  name="month"
-				  placeholder="Month"
-				  min="1"
-				  autocomplete="off"
-				  required
-				/>
-			  </div>
-			</div>
-		  </div>
-		</form>
-	  </a-modal>
+      style="top: 40px"
+      v-model:open="showAddModal"
+      width="600px"
+      title="Thêm gói"
+      @ok="handleAddPackage"
+      @cancel="handleCancel"
+      okText="Thêm gói"
+      cancelText="Đóng"
+    >
+      <a-form :model="newPackage" layout="vertical" ref="form"> <!-- Thiết lập layout là vertical -->
+        <a-row>
+          <a-col :span="24">
+            <a-form-item label="Tiêu đề:" name="TITLE" :rules="[{ required: true, message: 'Vui lòng nhập tiêu đề', trigger: 'blur'}]">
+              <a-input v-model="newPackage.TITLE" placeholder="Title" autocomplete="off" />
+            </a-form-item>
+          </a-col>
+        </a-row>
+
+        <a-row>
+          <a-col :span="24">
+            <a-form-item label="Level:" name="LEVEL" :rules="[{ required: true, message: 'Level này đã có, vui lòng nhập level khác', trigger: 'blur' }]">
+              <a-input-number v-model="newPackage.LEVEL" :min="1" placeholder="Level" autocomplete="off" />
+            </a-form-item>
+          </a-col>
+        </a-row>
+
+        <a-row>
+          <a-col :span="24">
+            <a-form-item label="Giá:" name="COST" :rules="[{ required: true, message: 'Vui lòng nhập giá của gói', trigger: 'blur' }]">
+              <a-input-number v-model="newPackage.COST" :min="0" placeholder="Cost" autocomplete="off" />
+            </a-form-item>
+          </a-col>
+        </a-row>
+
+        <a-row>
+          <a-col :span="24">
+            <a-form-item label="Số lượng sản phẩm:" name="NUMBER_OF_PRODUCT" :rules="[{ required: true, message: 'Vui lòng nhập số lượng sản phẩm', trigger: 'blur' }]">
+              <a-input-number v-model="newPackage.NUMBER_OF_PRODUCT" :min="0" placeholder="Number of Product" autocomplete="off" />
+            </a-form-item>
+          </a-col>
+        </a-row>
+
+        <a-row>
+          <a-col :span="24">
+            <a-form-item label="Số lượt bình luận:" name="NUMBER_OF_COMMENT" :rules="[{ required: true, message: 'Vui lòng nhập số lượt bình luận', trigger: 'blur' }]">
+              <a-input-number v-model="newPackage.NUMBER_OF_COMMENT" :min="0" placeholder="Number of Comment" autocomplete="off" />
+            </a-form-item>
+          </a-col>
+        </a-row>
+
+        <a-row>
+          <a-col :span="24">
+            <a-form-item label="Mô tả:" name="DESCRIPTION" :rules="[{ required: true, message: 'Vui lòng nhập mô tả', trigger: 'blur' }]">
+              <a-textarea v-model="newPackage.DESCRIPTION" placeholder="Description" autocomplete="off" />
+            </a-form-item>
+          </a-col>
+        </a-row>
+
+        <a-row>
+          <a-col :span="12">
+            <a-form-item label="Giảm giá (%)" name="DISCOUNT" :rules="[{ required: true, message: 'Vui lòng nhập giảm giá', trigger: 'blur' }]">
+              <a-input-number v-model="newPackage.DISCOUNT" :min="10" :max="50" placeholder="Discount" autocomplete="off" />
+            </a-form-item>
+          </a-col>
+        </a-row>
+
+        <a-row>
+          <a-col :span="12">
+            <a-form-item label="Thời gian (tháng)" name="MONTH" :rules="[{ required: true, message: 'Vui lòng nhập thời gian', trigger: 'blur' }]">
+              <a-input-number v-model="newPackage.MONTH" :min="1" placeholder="Month" autocomplete="off" />
+            </a-form-item>
+          </a-col>
+        </a-row>
+      </a-form>
+    </a-modal>
 
 	  <!-- Modal xóa gói -->
 	  <a-modal
@@ -292,11 +249,10 @@
 import { mapState } from 'vuex';
 import axiosClient from '../../../api/axiosClient';
 import { message } from 'ant-design-vue';
-import { useStore } from 'vuex';
 
 export default {
   computed: {
-    ...mapState(['isLoggedIn', 'packages']),
+    ...mapState(['isLoggedIn', 'packages', 'deletePackage']),
   },
   data() {
     return {
@@ -307,13 +263,13 @@ export default {
 	  isModalDelete: false,
       newPackage: {
         TITLE: '',
-        LEVEL: 1,
-        COST: 0,
-        NUMBER_OF_PRODUCT: 0,
-        NUMBER_OF_COMMENT: 0,
+        LEVEL: null,
+        COST: null,
+        NUMBER_OF_PRODUCT: null,
+        NUMBER_OF_COMMENT: null,
         DESCRIPTION: '',
-        MONTH: 0,
-        DISCOUNT: 0,
+        DISCOUNT: null,
+        MONTH: null
       },
 	  okButtonProps: {
         style: {
@@ -347,50 +303,38 @@ export default {
 	// },
     
     async handleAddPackage() {
-      if (!this.newPackage.TITLE || !this.newPackage.DESCRIPTION) {
-        message.error('Bạn phải nhập đủ thông tin gói.');
-        return;
-      }
-
       try {
-		const response = await axiosClient.post('/package/create', this.newPackage);
-		console.log('Package created:', response.data);
-		if (response.data.success) {
-			this.$store.dispatch('fetchPackages');
-			this.resetForm();
-			this.showAddModal = false;
-			message.success('Thêm gói thành công!');
-		} else {
-		const { errors } = response.data;
-		if (errors && errors.length > 0) {
-			errors.forEach(error => {
-			message.error(error);
-			});
-		} else {
-			message.error('Lỗi khi thêm gói.');
-			}
-		}
-	} catch (error) {
-		console.error('Error creating package:', error);
-		message.error('Lỗi khi thêm gói.');
-  	}
+        // Kiểm tra tính hợp lệ của form
+        await this.$refs.form.validate();
+        
+        // Gửi yêu cầu tạo gói
+        const response = await axiosClient.post('/package/create', this.newPackage);
+        console.log('Package created:', response.data);
+        if (response.data.success) {
+          this.$store.dispatch('fetchPackages');
+          this.resetForm();
+          this.showAddModal = false;
+          message.success('Thêm gói thành công!');
+        } else {
+          message.error('Lỗi khi thêm gói mới.');
+        }
+      } catch (error) {
+        // Nếu form không hợp lệ, log lỗi chi tiết
+        if (error.errorFields) {
+          console.error('Validation failed:', error.errorFields);
+        } else {
+          console.error('Error creating package:', error);
+          message.error('Lỗi khi thêm gói.');
+        }
+      }
     },
-	async deletePackage(packageId, packageTitle) {
+	async handleOkDelete() {
 		try {
-			this.selectedTitle = packageTitle;
-			this.isModalDelete = true;
-			this.selectedPackage = packageId;
+			await this.$store.dispatch('deletePackage', this.selectedPackage._id);
+			this.isModalDelete = false;
 		} catch (error) {
 			console.error('Error deleting package:', error);
 		}
-	},
-	async handleOkDelete() {
-	try {
-		await this.$store.dispatch('deletePackage', this.selectedPackage);
-		this.isModalDelete = false;
-	} catch (error) {
-		console.error('Error deleting package:', error);
-	}
 	},
 
 	handleCancelDelete() {
@@ -403,13 +347,13 @@ export default {
     resetForm() {
       this.newPackage = {
         TITLE: '',
-        LEVEL: 1,
-        COST: 0,
-        NUMBER_OF_PRODUCT: 0,
-        NUMBER_OF_COMMENT: 0,
+        LEVEL: null,
+        COST: null,
+        NUMBER_OF_PRODUCT: null,
+        NUMBER_OF_COMMENT: null,
         DESCRIPTION: '',
-        MONTH: 0,
-        DISCOUNT: 0,
+        DISCOUNT: null,
+        MONTH: null
       };
     },
 	

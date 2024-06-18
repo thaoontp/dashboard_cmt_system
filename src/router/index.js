@@ -10,6 +10,7 @@ import RegisterUser from "@/views/RegisterUser/RegisterUser.vue"
 import LoginAdmin from "../views/LoginAdmin/LoginAdmin.vue"
 import HomeAdmin from "@/views/HomeAdmin/MainHome/Home.vue"
 import User from "@/views/HomeAdmin/User/User.vue"
+import BlockUser from "@/views/HomeAdmin/BlockUser/BlockUser.vue"
 import Packages from "@/views/HomeAdmin/Packages/Packages.vue"
 
 import RegisterOrgan from "../views/Organizations/RegisterOrgan/RegisterOrgan.vue"
@@ -43,6 +44,14 @@ const routes = [
 			layout: AdminLayout,
 		}
 	},
+	{
+		path: "/user/blockUser",
+		component: BlockUser,
+		meta: {
+			layout: AdminLayout,
+		}
+	},
+	
 	{
 		path: "/package",
 		component: Packages,
