@@ -1,9 +1,61 @@
 .containPage {
-    padding: 20px 30px;
+  padding: 20px 30px;
 
-    .contentPage {
-        padding: 0px 20px 20px 20px;
-        border-radius: 10px;
-        background-color: #eae2e24a;
+  .header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  // .search-bar {
+  //   flex-grow: 1; /* Chia sẻ khoảng trống để nút nằm bên phải */
+  //   padding: 30px;
+  //   border-radius: 20px;
+  // }
+  .search-bar {
+    position: relative;
+    border-radius: 20px;
+    width: 200px;
+    margin-bottom: 18px;
+
+    .inputSearch {
+      padding: 7px 13px;
+      background-color: #ccc;
+      border: none;
+      outline: none;
+      border-bottom-left-radius: 20px;
+      border-top-left-radius: 20px;
     }
+
+    .iconSearch {
+      border-radius: 20px;
+      position: absolute;
+      right: 10px; /* Điều chỉnh khoảng cách giữa icon và input */
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+    }
+  }
+  
+  
+
+
+  .blockbutton {
+      margin-right: 20px;
+      background-color: #ff4d4f; 
+      border-color: #b71c1c; 
+      border-radius: 10px;
+      color: #fff; 
+      &:hover {
+          background-color: #ff7875;
+          border-color: #ff7875;
+      }
+  }
+
+  .contentPage {
+      padding: 0px 20px 20px 20px;
+      border-radius: 10px;
+      background-color: #eae2e24a;
+  }
 }

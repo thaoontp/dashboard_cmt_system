@@ -1,5 +1,5 @@
 <template>
-    <nav class="navbar bg-body-tertiary">
+    <nav class="navbar">
       <div class="title">
         <div class="logo">
           <img src="../../assets/logo.png" alt="Vue" />

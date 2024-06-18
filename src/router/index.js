@@ -7,9 +7,11 @@ import AuthLayout from "../layouts/AuthLayout/AuthLayout.vue"
 import RegisterUser from "../views/RegisterUser/RegisterUser.vue"
 
 // router Admin
-import HomeAdmin from "../views/HomeAdmin/MainHome/Home.vue"
-import User from "../views/HomeAdmin/User/User.vue"
 import LoginAdmin from "../views/LoginAdmin/LoginAdmin.vue"
+import HomeAdmin from "@/views/HomeAdmin/MainHome/Home.vue"
+import User from "@/views/HomeAdmin/User/User.vue"
+import BlockUser from "@/views/HomeAdmin/BlockUser/BlockUser.vue"
+import Packages from "@/views/HomeAdmin/Packages/Packages.vue"
 
 
 import HomeOrgan from "../views/Organizations/HomeOrgan/HomeOrgan.vue"
@@ -39,6 +41,21 @@ const routes = [
 	{
 		path: "/user",
 		component: User,
+		meta: {
+			layout: AdminLayout,
+		}
+	},
+	{
+		path: "/user/blockUser",
+		component: BlockUser,
+		meta: {
+			layout: AdminLayout,
+		}
+	},
+	
+	{
+		path: "/package",
+		component: Packages,
 		meta: {
 			layout: AdminLayout,
 		}

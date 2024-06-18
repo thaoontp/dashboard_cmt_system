@@ -2,37 +2,90 @@
 	<div class="containPage" v-if="isLogin">
 	  <h2>Dashboard</h2>
 	  <div class="contentPage">
-		<div class="row">
-		  <div class="col-md-4">
-			<div class="card">
-			  <div class="card-body">
-				<h5 class="card-title">Tổng User</h5>
-				<p class="card-text">{{ totalUser }}</p>
+		<div class="listCard">
+		  <div class="row pl-3">
+			<div class="col">
+			  <div class="cardInfo">
+				<div class="leftCard">
+				  <div class="iconCard">
+					<i class="fa-solid fa-cart-shopping"></i>
+				  </div>
+				</div>
+				<div class="rightCard">
+				  <div class="numberCard">
+					{{ totalUser }}
+				  </div>
+				  <div class="nameCard">Tổng User</div>
+				</div>
 			  </div>
 			</div>
-		  </div>
-		  <div class="col-md-4">
-			<div class="card">
-			  <div class="card-body">
-				<h5 class="card-title">Tổng tài khoản đã kích hoạt</h5>
-				<p class="card-text">{{ totalActivated }}</p>
+			<div class="col d-flex">
+			  <div class="cardInfo">
+				<div class="leftCard">
+				  <div class="iconCard" style="background-color: #e9a4a4">
+					<i class="fa-solid fa-ban" style="color: #d50d0d"></i>
+				  </div>
+				</div>
+				<div class="rightCard">
+				  <div class="numberCard">
+					{{ totalActivated }}
+				  </div>
+				  <div class="nameCard">Tổng tài khoản đã kích hoạt</div>
+				</div>
 			  </div>
 			</div>
-		  </div>
-		  <div class="col-md-4">
-			<div class="card">
-			  <div class="card-body">
-				<h5 class="card-title">Số tài khoản bị khóa</h5>
-				<p class="card-text">{{ totalBlocked }}</p>
+			<div class="col d-flex">
+			  <div class="cardInfo">
+				<div class="leftCard">
+				  <div class="iconCard" style="background-color: #cbe2ff">
+					<i
+					  class="fa-solid fa-hourglass-half"
+					  style="color: #007bff"
+					></i>
+				  </div>
+				</div>
+				<div class="rightCard">
+				  <div class="numberCard">
+					{{ totalBlocked }}
+				  </div>
+				  <div class="nameCard">Số tài khoản bị khóa</div>
+				</div>
+			  </div>
+			</div>
+			<div class="col d-flex">
+			  <div class="cardInfo">
+				<div class="leftCard">
+				  <div class="iconCard" style="background-color: #cdf1ef">
+					<i class="fa-solid fa-user-tie" style="color: #05b9aa"></i>
+				  </div>
+				</div>
+				<div class="rightCard">
+				  <div class="numberCard">
+					{{ totalStaff }}
+				  </div>
+				  <div class="nameCard">Tổng nhân viên</div>
+				</div>
+			  </div>
+			</div>
+			<div class="col d-flex">
+			  <div class="cardInfo">
+				<div class="leftCard">
+				  <div class="iconCard" style="background-color: #e5cff7">
+					<i class="fa-solid fa-user" style="color: #bc7af9"></i>
+				  </div>
+				</div>
+				<div class="rightCard">
+				  <div class="numberCard">
+					{{ totalCustomer }}
+				  </div>
+				  <div class="nameCard">Tổng độc giả</div>
+				</div>
 			  </div>
 			</div>
 		  </div>
 		</div>
-	  </div>
 	</div>
-	<div v-else class="denied">
-	  <h3 class="text-center mt-5">Vui lòng đăng nhập để sử dụng dịch vụ</h3>
-	</div>
+</div>
   </template>
   
   <script>
@@ -81,7 +134,7 @@
   };
   </script>
   
-  <style scoped>
-  /* Add your custom styles here */
+  <style lang="scss" scoped>
+  @import "Home.scss";
   </style>
   
