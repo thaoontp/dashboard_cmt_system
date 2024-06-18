@@ -7,14 +7,14 @@ import AuthLayout from "../layouts/AuthLayout/AuthLayout.vue"
 import RegisterUser from "../views/RegisterUser/RegisterUser.vue"
 
 // router Admin
-import LoginAdmin from "../views/LoginAdmin/LoginAdmin.vue"
-import HomeAdmin from "@/views/HomeAdmin/MainHome/Home.vue"
-import User from "@/views/HomeAdmin/User/User.vue"
 import BlockUser from "@/views/HomeAdmin/BlockUser/BlockUser.vue"
+import HomeAdmin from "@/views/HomeAdmin/MainHome/Home.vue"
 import Packages from "@/views/HomeAdmin/Packages/Packages.vue"
+import User from "@/views/HomeAdmin/User/User.vue"
+import LoginAdmin from "../views/LoginAdmin/LoginAdmin.vue"
 
 import store from "@/store"
-import BlockUser from '../components/Organization/BlockUser.vue'
+import BlockUserForOrganization from '../components/Organization/BlockUserForOrganization.vue'
 import OrganizationsList from '../components/Organization/OrganizationsList.vue'
 import UserDetail from '../components/Organization/UserDetail.vue'
 import UsersList from '../components/Organization/UsersList.vue'
@@ -51,7 +51,7 @@ const routes = [
 			layout: AdminLayout,
 		}
 	},
-	
+
 	{
 		path: "/package",
 		component: Packages,
@@ -103,7 +103,7 @@ const routes = [
 	{
 		path: '/block-user/:userId',
 		name: 'BlockUser',
-		component: BlockUser,
+		component: BlockUserForOrganization,
 		meta: {
 			layout: AdminLayout,
 		},
