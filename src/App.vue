@@ -1,12 +1,13 @@
 <script setup>
 import "vue3-toastify/dist/index.css";
 </script>
+
 <template>
-  <div>
-    <component :is="$route.meta.layout">
-      <router-view />
-    </component>
-  </div>
+	<div>
+		<component :is="$route.meta.layout">
+			<router-view />
+		</component>
+	</div>
 </template>
 
 <style lang="scss">

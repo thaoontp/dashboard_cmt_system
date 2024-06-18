@@ -4,7 +4,7 @@ import AdminLayout from "../layouts/AdminLayout/AdminLayout.vue"
 import AuthLayout from "../layouts/AuthLayout/AuthLayout.vue"
 
 // User
-import RegisterUser from "@/views/RegisterUser/RegisterUser.vue"
+import RegisterUser from "../views/RegisterUser/RegisterUser.vue"
 
 // router Admin
 import LoginAdmin from "../views/LoginAdmin/LoginAdmin.vue"
@@ -13,9 +13,10 @@ import User from "@/views/HomeAdmin/User/User.vue"
 import BlockUser from "@/views/HomeAdmin/BlockUser/BlockUser.vue"
 import Packages from "@/views/HomeAdmin/Packages/Packages.vue"
 
-import RegisterOrgan from "../views/Organizations/RegisterOrgan/RegisterOrgan.vue"
+
 import HomeOrgan from "../views/Organizations/HomeOrgan/HomeOrgan.vue"
 import LoginOrgan from "../views/Organizations/LoginOrgan/LoginOrgan.vue"
+import RegisterOrgan from "../views/Organizations/RegisterOrgan/RegisterOrganization.vue"
 
 import store from "@/store"
 
@@ -34,7 +35,7 @@ const routes = [
 		meta: {
 			layout: AdminLayout,
 			// requiresAuth: true,
-      		// roles: ['admin'],
+			// roles: ['admin'],
 		}
 	},
 	{
@@ -82,7 +83,7 @@ const routes = [
 		}
 	},
 	{
-		path: "/organization/login",
+		path: "/organization/getUserByOrganization",
 		component: LoginOrgan,
 		meta: {
 			layout: AuthLayout,
@@ -97,26 +98,26 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
 	const isLoggedIn = store.getters.isLoggedIn;
 	const userInfo = store.getters.userInfo;
-  
+
 	let userRole = '';
 	if (userInfo?.ROLE?.IS_ADMIN) {
-	  userRole = 'admin';
+		userRole = 'admin';
 	} else if (userInfo?.ROLE?.IS_ORGANIZATION) {
-	  userRole = 'organization';
+		userRole = 'organization';
 	} else {
-	  userRole = 'guest';
+		userRole = 'guest';
 	}
-  
+
 	if (to.matched.some(record => record.meta.requiresAuth)) {
-	  if (isLoggedIn && to.matched.some(record => record.meta.roles && record.meta.roles.includes(userRole))) {
-		next(); 
-	  } else {
-		next('/organization/login');
-	  }
+		if (isLoggedIn && to.matched.some(record => record.meta.roles && record.meta.roles.includes(userRole))) {
+			next();
+		} else {
+			next('/organization/login');
+		}
 	} else {
-	  next(); 
+		next();
 	}
-  });
-  
+});
+
 
 export default router;
