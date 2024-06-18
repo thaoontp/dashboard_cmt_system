@@ -11,13 +11,12 @@ import HomeAdmin from "../views/HomeAdmin/MainHome/Home.vue"
 import User from "../views/HomeAdmin/User/User.vue"
 import LoginAdmin from "../views/LoginAdmin/LoginAdmin.vue"
 
-
-import HomeOrgan from "../views/Organizations/HomeOrgan/HomeOrgan.vue"
-import LoginOrgan from "../views/Organizations/LoginOrgan/LoginOrgan.vue"
-import RegisterOrgan from "../views/Organizations/RegisterOrgan/RegisterOrganization.vue"
-
 import store from "@/store"
-
+import BlockUser from '../components/Organization/BlockUser.vue'
+import OrganizationsList from '../components/Organization/OrganizationsList.vue'
+import UserDetail from '../components/Organization/UserDetail.vue'
+import UsersList from '../components/Organization/UsersList.vue'
+import RegisterOrganization from '../views/Organizations/RegisterOrgan/RegisterOrganization.vue'
 const routes = [
 	{
 		path: "/user/register",
@@ -52,26 +51,48 @@ const routes = [
 	},
 	// router Organization
 	{
-		path: "/organization",
-		component: HomeOrgan,
+		path: "/organization/register",
+		component: RegisterOrganization,
 		meta: {
 			layout: AdminLayout,
 		}
 	},
 	{
-		path: "/organization/register",
-		component: RegisterOrgan,
+		path: "/organization/getOrganization",
+		name: 'OrganizationsList',
+		component: OrganizationsList,
 		meta: {
-			layout: AuthLayout,
+			layout: AdminLayout,
 		}
 	},
 	{
-		path: "/organization/getUserByOrganization",
-		component: LoginOrgan,
+		path: '/organization/:id/users',
+		name: 'UsersList',
+		component: UsersList,
 		meta: {
-			layout: AuthLayout,
-		}
+			layout: AdminLayout,
+		},
+		props: true,
 	},
+	{
+		path: '/users/:userId',
+		name: 'UserDetail',
+		component: UserDetail,
+		meta: {
+			layout: AdminLayout,
+		},
+		props: true,
+	},
+	{
+		path: '/block-user/:userId',
+		name: 'BlockUser',
+		component: BlockUser,
+		meta: {
+			layout: AdminLayout,
+		},
+		props: true
+	}
+
 ]
 const router = createRouter({
 	history: createWebHistory(),
