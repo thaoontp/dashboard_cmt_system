@@ -1,11 +1,11 @@
 <template>
     <div class="app">
       <div class="d-block w-100">
-        <AuthHeader />
+        <Header />
         <router-view />
       </div>
     </div>
   </template>
   <script setup>
-  import AuthHeader from "../../components/AuthHeader/AuthHeader.vue";
+  import Header from "../../components/HeaderAdmin/Header.vue";
   </script>

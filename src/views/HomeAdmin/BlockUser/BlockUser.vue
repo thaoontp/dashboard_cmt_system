@@ -4,8 +4,9 @@
     <div class="user_active_list">
       <div v-for="user in activeUsers" :key="user._id" class="user-info">
         <p>User Name: <strong>{{ user.USERNAME }}</strong></p>
-        <p>User ID: {{ user._id }}</p>
+        <!-- <p>User ID: {{ user._id }}</p> -->
         <p>Full Name: {{ user.FULLNAME }}</p>
+        <p>Gender: {{ user.GENDER }}</p>
         <p>Email: {{ user.EMAIL }}</p>
         <a-button type="danger" v-if="isLoggedIn" @click="showBlockModal(user)" class="blockbutton">Block</a-button>
       </div>

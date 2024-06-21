@@ -5,7 +5,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
+    // margin-bottom: 10px;
   }
   
   // .search-bar {
@@ -15,23 +15,24 @@
   // }
   .search-bar {
     position: relative;
-    border-radius: 20px;
+    // border-radius: 20px;
     width: 200px;
     margin-bottom: 18px;
 
     .inputSearch {
       padding: 7px 13px;
+      margin-left: 20px;
       background-color: #ccc;
       border: none;
       outline: none;
-      border-bottom-left-radius: 20px;
-      border-top-left-radius: 20px;
+      // border-bottom-left-radius: 20px;
+      // border-top-left-radius: 20px;
     }
 
     .iconSearch {
-      border-radius: 20px;
+      // border-radius: 20px;
       position: absolute;
-      right: 10px; /* Điều chỉnh khoảng cách giữa icon và input */
+      right: 0px; /* Điều chỉnh khoảng cách giữa icon và input */
       top: 50%;
       transform: translateY(-50%);
       cursor: pointer;
