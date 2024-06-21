@@ -7,11 +7,13 @@ import AuthLayout from "../layouts/AuthLayout/AuthLayout.vue"
 import RegisterUser from "../views/RegisterUser/RegisterUser.vue"
 
 // router Admin
+
 import LoginAdmin from "../views/LoginAdmin/LoginAdmin.vue"
 import HomeAdmin from "@/views/HomeAdmin/MainHome/Home.vue"
 import User from "@/views/HomeAdmin/User/User.vue"
 import BlockUserAdmin from "@/views/HomeAdmin/BlockUser/BlockUser.vue"
 import Packages from "@/views/HomeAdmin/Packages/Packages.vue"
+
 
 // Page Organization
 import PageOrganLayout from "@/layouts/PageOrganLayout/PageOrganLayout.vue"
@@ -20,9 +22,7 @@ import MenuPage from "@/views/PageOrgan/Menu/Menu.vue"
 import HistoryPage from "@/views/PageOrgan/History/History.vue"
 
 import store from "@/store"
-import BlockUser from '../components/Organization/BlockUser.vue'
 import OrganizationsList from '../components/Organization/OrganizationsList.vue'
-import UserDetail from '../components/Organization/UserDetail.vue'
 import UsersList from '../components/Organization/UsersList.vue'
 import RegisterOrganization from '../views/Organizations/RegisterOrgan/RegisterOrganization.vue'
 const routes = [
@@ -57,7 +57,7 @@ const routes = [
 			layout: AdminLayout,
 		}
 	},
-	
+
 	{
 		path: "/package",
 		component: Packages,
@@ -97,6 +97,7 @@ const routes = [
 		},
 		props: true,
 	},
+
 	{
 		path: '/users/:userId',
 		name: 'UserDetail',

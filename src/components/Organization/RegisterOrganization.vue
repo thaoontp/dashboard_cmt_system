@@ -16,8 +16,12 @@
             </div>
             <button type="button" @click="registerOrganization">Register</button>
         </form>
-        <div v-if="error">
-            <p>{{ error }}</p>
+        <div class="modal" v-if="error">
+            <div class="modal-content">
+                <span class="close" @click="closeModal">&times;</span>
+                <p>{{ error }}</p>
+                <button @click="closeModal">OK</button>
+            </div>
         </div>
     </div>
 </template>
@@ -44,24 +48,131 @@ export default {
         async registerOrganization() {
             try {
                 const response = await axiosClient.post('/organization/registerOrganization', this.form);
-                if (response.data.success) {
+                if (response && response.data && response.data.success) {
                     alert('Organization registered successfully');
-                    this.form = {
-                        ORGANIZATION_NAME: '',
-                        ORGANIZATION_EMAIL: '',
-                        ORGANIZATION_PHONE: ''
-                    };
-                } else {
+                    this.resetForm();
+                } else if (response && response.data && response.data.message) {
                     this.error = response.data.message;
+                } else {
+                    this.error = 'Unknown error occurred';
                 }
             } catch (error) {
-                const message = error.response.data.message
-                this.error = message;
+                if (error.response && error.response.data && error.response.data.message) {
+                    this.error = error.response.data.message;
+                } else {
+                    this.error = 'Network error occurred';
+                }
                 console.error(error);
             }
+        },
+
+        closeModal() {
+            this.error = null;
+        },
+
+        resetForm() {
+            this.form = {
+                ORGANIZATION_NAME: '',
+                ORGANIZATION_EMAIL: '',
+                ORGANIZATION_PHONE: ''
+            };
         }
     }
 };
 </script>
 
-<style scoped></style>
+
+
+<style scoped>
+    form {
+        max-width: 400px;
+        margin: 0 auto;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        background-color: #f9f9f9;
+    }
+
+    label {
+        font-weight: bold;
+        margin-bottom: 8px;
+        display: block;
+    }
+
+    input[type="text"],
+    input[type="email"] {
+        width: 100%;
+        padding: 8px;
+        margin-bottom: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+
+    .error-message {
+        background-color: #f44336;
+        color: white;
+        padding: 10px;
+        margin-top: 10px;
+        border-radius: 4px;
+        text-align: center;
+    }
+
+    h2 {
+        text-align: center;
+        font-size: 24px;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 20px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        border-bottom: 2px solid #4CAF50;
+        padding-bottom: 5px;
+    }
+
+    .modal {
+        display: block;
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-content {
+        background-color: #fefefe;
+        margin: 15% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+        max-width: 400px;
+        border-radius: 5px;
+        position: relative;
+    }
+
+    .close {
+        position: absolute;
+        top: 0;
+        right: 10px;
+        font-size: 28px;
+        cursor: pointer;
+    }
+
+    button {
+        background-color: #4CAF50;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        float: right;
+        margin-top: 10px;
+    }
+
+    button:hover {
+        background-color: #45a049;
+    }
+</style>
+
