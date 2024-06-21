@@ -14,9 +14,7 @@ import User from "@/views/HomeAdmin/User/User.vue"
 import LoginAdmin from "../views/LoginAdmin/LoginAdmin.vue"
 
 import store from "@/store"
-import BlockUserForOrganization from '../components/Organization/BlockUserForOrganization.vue'
 import OrganizationsList from '../components/Organization/OrganizationsList.vue'
-import UserDetail from '../components/Organization/UserDetail.vue'
 import UsersList from '../components/Organization/UsersList.vue'
 import RegisterOrganization from '../views/Organizations/RegisterOrgan/RegisterOrganization.vue'
 const routes = [
@@ -91,25 +89,6 @@ const routes = [
 		},
 		props: true,
 	},
-	{
-		path: '/users/:userId',
-		name: 'UserDetail',
-		component: UserDetail,
-		meta: {
-			layout: AdminLayout,
-		},
-		props: true,
-	},
-	{
-		path: '/block-user/:userId',
-		name: 'BlockUser',
-		component: BlockUserForOrganization,
-		meta: {
-			layout: AdminLayout,
-		},
-		props: true
-	}
-
 ]
 const router = createRouter({
 	history: createWebHistory(),
