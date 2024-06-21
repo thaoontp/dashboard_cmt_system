@@ -10,8 +10,14 @@ import RegisterUser from "../views/RegisterUser/RegisterUser.vue"
 import LoginAdmin from "../views/LoginAdmin/LoginAdmin.vue"
 import HomeAdmin from "@/views/HomeAdmin/MainHome/Home.vue"
 import User from "@/views/HomeAdmin/User/User.vue"
-import BlockUser from "@/views/HomeAdmin/BlockUser/BlockUser.vue"
+import BlockUserAdmin from "@/views/HomeAdmin/BlockUser/BlockUser.vue"
 import Packages from "@/views/HomeAdmin/Packages/Packages.vue"
+
+// Page Organization
+import PageOrganLayout from "@/layouts/PageOrganLayout/PageOrganLayout.vue"
+import HomePageOrgan from "@/views/PageOrgan/HomePage/HomePage.vue"
+import MenuPage from "@/views/PageOrgan/Menu/Menu.vue"
+import HistoryPage from "@/views/PageOrgan/History/History.vue"
 
 import store from "@/store"
 import BlockUser from '../components/Organization/BlockUser.vue'
@@ -46,7 +52,7 @@ const routes = [
 	},
 	{
 		path: "/user/blockUser",
-		component: BlockUser,
+		component: BlockUserAdmin,
 		meta: {
 			layout: AdminLayout,
 		}
@@ -60,7 +66,7 @@ const routes = [
 		}
 	},
 	{
-		path: "/user/login",
+		path: "/admin/login",
 		component: LoginAdmin,
 		meta: {
 			layout: AuthLayout,
@@ -108,7 +114,30 @@ const routes = [
 			layout: AdminLayout,
 		},
 		props: true
-	}
+	},
+
+	// Page Organization
+	{
+		path: "/pages/organizations",
+		component: HomePageOrgan,
+		meta: {
+			layout: PageOrganLayout,
+		}
+	},
+	{
+		path: "/pages/menu",
+		component: MenuPage,
+		meta: {
+			layout: PageOrganLayout,
+		}
+	},
+	{
+		path: "/pages/history",
+		component: HistoryPage,
+		meta: {
+			layout: PageOrganLayout,
+		}
+	},
 
 ]
 const router = createRouter({
@@ -133,7 +162,7 @@ router.beforeEach((to, from, next) => {
 		if (isLoggedIn && to.matched.some(record => record.meta.roles && record.meta.roles.includes(userRole))) {
 			next();
 		} else {
-			next('/organization/login');
+			next('/login');
 		}
 	} else {
 		next();

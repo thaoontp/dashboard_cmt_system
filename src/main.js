@@ -4,6 +4,7 @@ import { far } from "@fortawesome/free-regular-svg-icons"
 import { fas } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
 import Antd from 'ant-design-vue'
+import { Menu, List ,Drawer, Button, message } from "ant-design-vue"
 
 import 'bootstrap-vue-3/dist/bootstrap-vue-3.css'
 import 'bootstrap/dist/css/bootstrap.min.css'
@@ -19,6 +20,10 @@ app.component("font-awesome-icon", FontAwesomeIcon);
 app.use(store)
 app.use(router)
 app.use(Antd)
+app.use(List);
+app.use(Menu);
+app.use(Button);
+app.use(Drawer);
 
 // app.use(Menu);
 // app.use(Switch);

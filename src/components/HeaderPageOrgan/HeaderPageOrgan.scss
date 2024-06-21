@@ -1,0 +1,92 @@
+.navbar {
+    height: 60px;
+    background-color: #70c2b4;
+    // border-left: 2px solid #eec2ab;
+  }
+  
+  .groupSearch {
+    background-color: #cdc3c3ab;
+    border-radius: 20px;
+  
+    .inputSearch {
+      padding: 7px 13px;
+      background-color: transparent;
+      border: none;
+      outline: none;
+      border-bottom-left-radius: 20px;
+      border-top-left-radius: 20px;
+    }
+  
+    .iconSearch {
+      background-color: var(--orange);
+      color: var(--light);
+      padding: 10px 23px;
+      border-radius: 20px;
+    }
+  }
+  
+  .infoUser {
+    display: flex;
+    margin-left: auto;
+  
+    .btnLogin {
+      background-image: linear-gradient(
+        to right,
+        var(--green) 0%,
+        #42aa61 51%,
+        #d8e41e 100%
+      );
+      padding: 10px 20px;
+      text-align: center;
+      transition: 0.5s;
+      background-size: 200% auto;
+      color: white;
+      box-shadow: 0 0 20px #eee;
+      border-radius: 10px;
+      display: block;
+    }
+  
+    .btnLogin:hover {
+      background-position: right center;
+      /* change the direction of the change here */
+      color: #fff;
+      text-decoration: none;
+    }
+  
+    .contentInfo {
+      .nameUser {
+        font-weight: bold;
+        margin-right: 30px;
+        padding-left: 3px;
+      }
+  
+      .btnCart {
+        margin-right: 30px;
+        background-color: var(--orange);
+        padding: 5px 6px;
+        color: var(--light);
+        border-radius: 50%;
+        position: absolute;
+      }
+    }
+  }
+  
+  // @media (max-width: 780px) {
+  //     .groupSearch {
+  //         display: flex;
+  //         margin: 5px auto;
+  //     }
+  
+  //     .infoUser {
+  //         display: flex;
+  //         margin: auto;
+  //     }
+  // }
+  .imageUser {
+    width: 30px;
+    border: 2px solid rgb(206, 206, 215);
+    border-radius: 50%;
+    height: auto; 
+  }
+
+
