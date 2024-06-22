@@ -89,7 +89,7 @@ const routes = [
 		}
 	},
 	{
-		path: '/organization/:id/users',
+		path: '/organization/:id',
 		name: 'UsersList',
 		component: UsersList,
 		meta: {
