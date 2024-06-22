@@ -3,7 +3,7 @@
     <h2>Danh sách người dùng thuộc tổ chức</h2>
     <div class="userSearch">
       <label for="userSearchInput">Tìm kiếm User:</label>
-      <input type="text" id="userSearchInput" v-model="userSearchInput" :placeholder="placeholderText" @input="searchUsers">
+      <input type="text" id="userSearchInput" v-model="userSearchInput" :placeholder="placeholderText" @input="debouncedSearchUsers">
       <button class="blueButton" @click="searchUsers">Tìm kiếm</button>
     </div>
     <a-table :dataSource="users" :columns="columns" rowKey="_id">
@@ -24,6 +24,11 @@
         </template>
       </template>
     </a-table>
+    <div class="pagination">
+      <button @click="previousPage()" :disabled="currentPage === 1">Previous</button>
+      <span>Page {{ currentPage }} of {{ totalPages }}</span>
+      <button @click="nextPage()" :disabled="currentPage === totalPages">Next</button>
+    </div>
     <div><button class="blueButton" @click="backToOrganizations">Back to Organizations</button></div>
     <div v-if="loading" class="loading-spinner"></div>
     <div v-if="selectedUser" class="userDetail" ref="userDetail">
@@ -50,6 +55,7 @@
 
 <script>
 import { Modal } from 'ant-design-vue';
+import _ from 'lodash';
 import axiosClient from '../../api/axiosClient';
 
 export default {
@@ -68,9 +74,10 @@ export default {
       ],
       currentPage: 1,
       totalPages: 0,
-      limit: 10,
+      limit: 2,
       selectedUser: null,
-      loading: false
+      loading: false,
+      debouncedSearchUsers: _.debounce(this.searchUsers, 300)
     };
   },
   computed: {
@@ -167,18 +174,10 @@ export default {
       await new Promise(resolve => setTimeout(resolve, 500));
       this.loading = false;
     },
-    searchUsers() {
-      if (!this.userSearchInput.trim()) {
-        this.users = [...this.originalUsers];
-        return;
-      }
-
-      const searchTerm = this.userSearchInput.trim().toLowerCase();
-      this.users = this.originalUsers.filter(user => 
-        user.USERNAME.toLowerCase().includes(searchTerm) ||
-        user.FULLNAME.toLowerCase().includes(searchTerm)
-      );
-    },
+    async searchUsers() {
+      this.currentPage = 1; // Reset to first page for new search
+      await this.fetchUsersByOrganizationId();
+    }
   }
 };
 </script>
@@ -345,6 +344,20 @@ export default {
   margin-top: 20px;
 }
 
+.pagination button {
+  background-color: #1890ff;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.pagination button:hover {
+  background-color: #40a9ff;
+}
+
 .redButton {
   background-color: #f5222d;
   color: white;
@@ -409,4 +422,3 @@ h2 {
   padding-bottom: 5px;
 }
 </style>
-
