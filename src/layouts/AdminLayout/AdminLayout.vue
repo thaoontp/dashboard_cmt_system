@@ -17,19 +17,19 @@
 
     <div class="container-fluid">
       <div class="row">
-        <!-- <div class="col-sm-2 d-none d-sm-flex">
+        <div class="col-sm-2 d-none d-sm-flex">
           <a-list style="width: 100%;" >
             <SideBarAdmin />
-            <template #header>
+            <!-- <template #header>
               <div style="font-size: 20px;">MENU</div>
-            </template>
+            </template> -->
           </a-list>
-        </div> -->
-        <div class="col-sm-2">
-            <SideBarAdmin />
         </div>
+        <!-- <div class="col-sm-2">
+            <SideBarAdmin />
+        </div> -->
 
-        <div class="col-12 col-sm-10">
+        <div class="col-10 col-sm-10">
           <router-view></router-view>
         </div>
       </div>

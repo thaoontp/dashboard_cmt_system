@@ -41,6 +41,14 @@
 	margin: 10px;
 	width: 300px;
 }
+
+hr{
+    display: block;
+    border: none;
+    height: 3px;
+    background-color: #198754;
+    margin: 0px;
+  }
   
 .btn-add-package {
 	margin-bottom: 20px;
@@ -71,7 +79,7 @@
       background-color: #309bff;
     }
     .remove {
-      background-color: rgb(213, 12, 12);
+      background-color: #198754;
     }
   }
 

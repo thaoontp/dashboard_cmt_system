@@ -1,5 +1,6 @@
 <template>
   <div class="containPage" v-if="isLoggedIn">
+    <h2>Danh sách người dùng</h2>
     <div class="header-container d-flex">
       <div class="search-bar">
         <a-input
@@ -25,7 +26,7 @@
     <div class="contentPage" v-if="isLoggedIn">
       <a-tabs v-model:activeKey="activeKey" @change="handleTabChange">
         <a-tab-pane key="4" tab="Tất cả người dùng">
-          <h4>Danh sách tất cả người dùng</h4>
+          <!-- <h4>Danh sách tất cả người dùng</h4> -->
           <a-table
             :dataSource="allUsers"
             :columns="columns"
@@ -57,7 +58,7 @@
           />
         </a-tab-pane>
         <a-tab-pane key="2" tab="Đang hoạt động" force-render>
-          <h4>Danh sách người dùng đang hoạt động</h4>
+          <!-- <h4>Danh sách người dùng đang hoạt động</h4> -->
           <a-table
             :dataSource="activeUsers"
             :columns="columnsActive"
@@ -73,7 +74,7 @@
           />
         </a-tab-pane>
         <a-tab-pane key="3" tab="Bị block">
-          <h4>Danh sách người dùng bị block</h4>
+          <!-- <h4>Danh sách người dùng bị block</h4> -->
           <a-table
             :dataSource="blockedUsers"
             :columns="columnsBlocked"
@@ -244,14 +245,14 @@ export default {
       console.log("Giá trị nhập vào ô tìm kiếm:", searchTerm);
     },
     async fetchUsers() {
-      const { activeKey, currentPage, pageSize, searchQuery } = this;
+      const { activeKey, currentPage, pageSize } = this;
       try {
         const response = await axiosClient.get("/user/getUsers", {
           params: {
             tabStatus: activeKey,
             page: currentPage,
             limit: pageSize,
-            searchQuery: searchQuery.value,
+            searchQuery: this.searchQuery.value,
           },
         });
 

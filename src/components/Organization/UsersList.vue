@@ -3,7 +3,7 @@
     <h2>Danh sách người dùng thuộc tổ chức</h2>
     <div class="userSearch">
       <label for="userSearchInput">Tìm kiếm User:</label>
-      <input type="text" id="userSearchInput" v-model="userSearchInput":placeholder="placeholderText" @input="searchUsers">
+      <input type="text" id="userSearchInput" v-model="userSearchInput" :placeholder="placeholderText" @input="searchUsers">
       <button class="blueButton" @click="searchUsers">Tìm kiếm</button>
     </div>
     <a-table :dataSource="users" :columns="columns" rowKey="_id">

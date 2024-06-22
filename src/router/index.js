@@ -98,24 +98,24 @@ const routes = [
 		props: true,
 	},
 
-	{
-		path: '/users/:userId',
-		name: 'UserDetail',
-		component: UserDetail,
-		meta: {
-			layout: AdminLayout,
-		},
-		props: true,
-	},
-	{
-		path: '/block-user/:userId',
-		name: 'BlockUser',
-		component: BlockUser,
-		meta: {
-			layout: AdminLayout,
-		},
-		props: true
-	},
+	// {
+	// 	path: '/users/:userId',
+	// 	name: 'UserDetail',
+	// 	component: UserDetail,
+	// 	meta: {
+	// 		layout: AdminLayout,
+	// 	},
+	// 	props: true,
+	// },
+	// {
+	// 	path: '/block-user/:userId',
+	// 	name: 'BlockUser',
+	// 	component: BlockUser,
+	// 	meta: {
+	// 		layout: AdminLayout,
+	// 	},
+	// 	props: true
+	// },
 
 	// Page Organization
 	{
