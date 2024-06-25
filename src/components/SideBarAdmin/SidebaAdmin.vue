@@ -87,14 +87,16 @@
       </router-link>
     </div>
 
+
     <div class="menu">
       <router-link to="/login" class="button">
+
         <span class="material-icons">
           <i class="fa-solid fa-right-to-bracket"></i>
         </span>
         <span class="text">Login</span>
       </router-link>
-    </div>
+    </div> -->
 
     <div class="menu" @click="showModal">
       <div class="button">
@@ -119,14 +121,14 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
-import logoURL from "../../assets/AuthHeader.png";
-import { useRouter } from "vue-router";
 import {
-  MailOutlined,
   AppstoreOutlined,
+  MailOutlined,
   SettingOutlined,
 } from "@ant-design/icons-vue";
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+import logoURL from "../../assets/AuthHeader.png";
 
 const theme = ref("light");
 const current = ref("1");
@@ -152,7 +154,7 @@ const showModal = () => {
 
 const logout = () => {
   localStorage.removeItem("token");
-  router.push("/user/login");
+  router.push("/admin/login");
 };
 const handleCancel = () => {
   isModal.value = false;

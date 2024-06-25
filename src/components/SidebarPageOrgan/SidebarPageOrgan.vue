@@ -39,12 +39,19 @@
         ></span>
         <span class="text">Profile</span>
       </router-link>
-      <router-link v-else to="/login" class="button">
+      <!-- <router-link to="/pages/registerUser" class="button">
+        <span class="material-icons">
+          <i class="fa-solid fa-user-plus"></i>
+        </span>
+        <span class="text">Register</span>
+      </router-link> -->
+
+      <!-- <router-link v-else to="/login" class="button">
         <span class="material-icons"
           ><i class="fa-solid fa-user-circle"></i
         ></span>
         <span class="text">Profile</span>
-      </router-link>
+      </router-link> -->
 
       <router-link v-if="isAdmin" to="/" class="button">
         <span class="material-icons">
@@ -77,11 +84,10 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
-import logoURL from "../../assets/AuthHeader.png";
-import { Button } from "ant-design-vue";
+import { computed, ref } from "vue";
 import { useRouter } from "vue-router";
-import { useStore } from 'vuex'; // Import useStore từ vuex
+import { useStore } from "vuex"; // Import useStore từ vuex
+import logoURL from "../../assets/AuthHeader.png";
 
 const store = useStore();
 
@@ -121,7 +127,6 @@ const logout = () => {
 const handleCancel = () => {
   isModal.value = false;
 };
-
 </script>
 
 <style lang="scss" scoped>

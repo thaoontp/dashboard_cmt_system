@@ -4,20 +4,59 @@
 
     <!-- Tabs navigation -->
     <ul class="navigation">
-      <li :class="{ activeTab: activeTab === 'all' }" @click="changeTab('all')">Tất cả</li>
-      <li :class="{ activeTab: activeTab === 'unapproved' }" @click="changeTab('unapproved')">Chưa duyệt</li>
-      <li :class="{ activeTab: activeTab === 'approved' }" @click="changeTab('approved')">Đã duyệt</li>
-      <li :class="{ activeTab: activeTab === 'active' }" @click="changeTab('active')">Đang hoạt động</li>
-      <li :class="{ activeTab: activeTab === 'unactive' }" @click="changeTab('unactive')">Ngừng hoạt động</li>
+      <li
+        :class="{ activeTab: currentTab === 'all' }"
+        @click="changeTab('all')"
+      >
+        Tất cả
+      </li>
+      <li
+        :class="{ activeTab: currentTab === 'unapproved' }"
+        @click="changeTab('unapproved')"
+      >
+        Chưa duyệt
+      </li>
+      <li
+        :class="{ activeTab: currentTab === 'approved' }"
+        @click="changeTab('approved')"
+      >
+        Đã duyệt
+      </li>
+      <li
+        :class="{ activeTab: currentTab === 'active' }"
+        @click="changeTab('active')"
+      >
+        Đang hoạt động
+      </li>
+      <li
+        :class="{ activeTab: currentTab === 'unactive' }"
+        @click="changeTab('unactive')"
+      >
+        Ngừng hoạt động
+      </li>
     </ul>
-
+    <!-- Search bar -->
+    <div class="search-bar">
+      <input
+        type="text"
+        v-model="searchKeyword"
+        @input="handleSearch"
+        placeholder="Nhập từ khóa tìm kiếm..."
+      />
+    </div>
     <!-- Organization Lists -->
     <div v-if="isLogin">
-      <!-- Loading Spinner -->
       <a-spin :spinning="isLoading">
-        <!-- All Organizations Tab -->
-        <div v-show="activeTab === 'all'" class="organizationList">
-          <a-table :dataSource="allOrganizations" :columns="columns" rowKey="_id">
+        <div
+          v-show="currentTab !== '' && filteredOrganizations.length > 0"
+          class="organizationList"
+        >
+          <a-table
+            :dataSource="filteredOrganizations"
+            :columns="columns"
+            rowKey="_id"
+            :pagination="false"
+          >
             <template #bodyCell="{ column, record }">
               <template v-if="column.dataIndex === '_id'">
                 {{ record._id }}
@@ -29,393 +68,316 @@
                 {{ record.USER_COUNT }}
               </template>
               <template v-else-if="column.dataIndex === 'ORGANIZATION_ACTIVE'">
-                <span :style="{ color: record.ORGANIZATION_ACTIVE.CHECK ? 'green' : 'grey' }">
-                  {{ record.ORGANIZATION_ACTIVE.CHECK ? 'Đang Hoạt Động' : 'Ngừng Hoạt Động' }}
+                <span
+                  :style="{
+                    color: record.ORGANIZATION_ACTIVE.CHECK ? 'green' : 'grey',
+                  }"
+                >
+                  {{
+                    record.ORGANIZATION_ACTIVE.CHECK
+                      ? "Đang Hoạt Động"
+                      : "Ngừng Hoạt Động"
+                  }}
                 </span>
               </template>
               <template v-else-if="column.key === 'approveAction'">
                 <template v-if="!record.OBJECT_APPROVED.CHECK">
-                  <button class="redButton" @click="confirmApprove(record._id)">Phê Duyệt</button>
+                  <button class="redButton" @click="confirmApprove(record._id)">
+                    Phê Duyệt
+                  </button>
                 </template>
                 <template v-else>
                   <span class="approvedText"> Đã Phê Duyệt</span>
                 </template>
               </template>
               <template v-else>
-                <button class="blueButton" @click="viewDetail(record)">Xem Chi Tiết</button>
+                <button class="blueButton" @click="viewDetail(record)">
+                  Xem Chi Tiết
+                </button>
               </template>
             </template>
           </a-table>
+          <!-- Pagination using Ant Design -->
           <div class="pagination">
-            <button @click="previousPage('all')" :disabled="currentPage.all === 1">Previous</button>
-            <span>Page {{ currentPage.all }} of {{ totalPages.all }}</span>
-            <button @click="nextPage('all')" :disabled="currentPage.all === totalPages.all">Next</button>
+            <a-pagination
+              :current="currentPage[currentTab]"
+              :total="totalPages[currentTab] * perPage"
+              :pageSize="perPage"
+              @change="handlePageChange"
+              :hideOnSinglePage="true"
+              class="ant-pagination"
+            />
           </div>
         </div>
-
-        <!-- Unapproved Organizations Tab -->
-        <div v-show="activeTab === 'unapproved'" class="organizationList">
-          <a-table :dataSource="unapprovedOrganizations" :columns="columns" rowKey="_id">
-            <template #bodyCell="{ column, record }">
-              <template v-if="column.dataIndex === '_id'">
-                {{ record._id }}
-              </template>
-              <template v-else-if="column.dataIndex === 'ORGANIZATION_NAME'">
-                {{ record.ORGANIZATION_NAME }}
-              </template>
-              <template v-else-if="column.dataIndex === 'USER_COUNT'">
-                {{ record.USER_COUNT }}
-              </template>
-              <template v-else-if="column.dataIndex === 'ORGANIZATION_ACTIVE'">
-                <span :style="{ color: record.ORGANIZATION_ACTIVE.CHECK ? 'green' : 'grey' }">
-                  {{ record.ORGANIZATION_ACTIVE.CHECK ? 'Đang Hoạt Động' : 'Ngừng Hoạt Động' }}
-                </span>
-              </template>
-              <template v-else-if="column.key === 'approveAction'">
-                <template v-if="!record.OBJECT_APPROVED.CHECK">
-                  <button class="redButton" @click="confirmApprove(record._id)">Phê Duyệt</button>
-                </template>
-                <template v-else>
-                  <span class="approvedText"> Đã Phê Duyệt</span>
-                </template>
-              </template>
-              <template v-else>
-                <button class="blueButton" @click="viewDetail(record)">Xem Chi Tiết</button>
-              </template>
-            </template>
-          </a-table>
-          <div class="pagination">
-            <button @click="previousPage('unapproved')" :disabled="currentPage.unapproved === 1">Previous</button>
-            <span>Page {{ currentPage.unapproved }} of {{ totalPages.unapproved }}</span>
-            <button @click="nextPage('unapproved')" :disabled="currentPage.unapproved === totalPages.unapproved">Next</button>
-          </div>
-        </div>
-
-        <!-- Approved Organizations Tab -->
-        <div v-show="activeTab === 'approved'" class="organizationList">
-          <a-table :dataSource="approvedOrganizations" :columns="columns" rowKey="_id">
-            <template #bodyCell="{ column, record }">
-              <template v-if="column.dataIndex === '_id'">
-                {{ record._id }}
-              </template>
-              <template v-else-if="column.dataIndex === 'ORGANIZATION_NAME'">
-                {{ record.ORGANIZATION_NAME }}
-              </template>
-              <template v-else-if="column.dataIndex === 'USER_COUNT'">
-                {{ record.USER_COUNT }}
-              </template>
-              <template v-else-if="column.dataIndex === 'ORGANIZATION_ACTIVE'">
-                <span :style="{ color: record.ORGANIZATION_ACTIVE.CHECK ? 'green' : 'grey' }">
-                  {{ record.ORGANIZATION_ACTIVE.CHECK ? 'Đang Hoạt Động' : 'Ngừng Hoạt Động' }}
-                </span>
-              </template>
-              <template v-else-if="column.key === 'approveAction'">
-                <template v-if="!record.OBJECT_APPROVED.CHECK">
-                  <button class="redButton" @click="confirmApprove(record._id)">Phê Duyệt</button>
-                </template>
-                <template v-else>
-                  <span class="approvedText"> Đã Phê Duyệt</span>
-                </template>
-              </template>
-              <template v-else>
-                <button class="blueButton" @click="viewDetail(record)">Xem Chi Tiết</button>
-              </template>
-            </template>
-          </a-table>
-          <div class="pagination">
-            <button @click="previousPage('approved')" :disabled="currentPage.approved === 1">Previous</button>
-            <span>Page {{ currentPage.approved }} of {{ totalPages.approved }}</span>
-            <button @click="nextPage('approved')" :disabled="currentPage.approved === totalPages.approved">Next</button>
-          </div>
-        </div>
-
-        <!-- Active Organizations Tab -->
-        <div v-show="activeTab === 'active'" class="organizationList">
-          <a-table :dataSource="activeOrganizations" :columns="columns" rowKey="_id">
-            <template #bodyCell="{ column, record }">
-              <template v-if="column.dataIndex === '_id'">
-                {{ record._id }}
-              </template>
-              <template v-else-if="column.dataIndex === 'ORGANIZATION_NAME'">
-                {{ record.ORGANIZATION_NAME }}
-              </template>
-              <template v-else-if="column.dataIndex === 'USER_COUNT'">
-                {{ record.USER_COUNT }}
-              </template>
-              <template v-else-if="column.dataIndex === 'ORGANIZATION_ACTIVE'">
-                <span :style="{ color: record.ORGANIZATION_ACTIVE.CHECK ? 'green' : 'grey' }">
-                  {{ record.ORGANIZATION_ACTIVE.CHECK ? 'Đang Hoạt Động' : 'Ngừng Hoạt Động' }}
-                </span>
-              </template>
-              <template v-else-if="column.key === 'approveAction'">
-                <template v-if="!record.OBJECT_APPROVED.CHECK">
-                  <button class="redButton" @click="confirmApprove(record._id)">Phê Duyệt</button>
-                </template>
-                <template v-else>
-                  <span class="approvedText"> Đã Phê Duyệt</span>
-                </template>
-              </template>
-              <template v-else>
-                <button class="blueButton" @click="viewDetail(record)">Xem Chi Tiết</button>
-              </template>
-            </template>
-          </a-table>
-          <div class="pagination">
-            <button @click="previousPage('active')" :disabled="currentPage.active === 1">Previous</button>
-            <span>Page {{ currentPage.active }} of {{ totalPages.active }}</span>
-            <button @click="nextPage('active')" :disabled="currentPage.active === totalPages.active">Next</button>
-          </div>
-        </div>
-
-        <!-- Unactive Organizations Tab -->
-        <div v-show="activeTab === 'unactive'" class="organizationList">
-          <a-table :dataSource="unactiveOrganizations" :columns="columns" rowKey="_id">
-            <template #bodyCell="{ column, record }">
-              <template v-if="column.dataIndex === '_id'">
-                {{ record._id }}
-              </template>
-              <template v-else-if="column.dataIndex === 'ORGANIZATION_NAME'">
-                {{ record.ORGANIZATION_NAME }}
-              </template>
-              <template v-else-if="column.dataIndex === 'USER_COUNT'">
-                {{ record.USER_COUNT }}
-              </template>
-              <template v-else-if="column.dataIndex === 'ORGANIZATION_ACTIVE'">
-                <span :style="{ color: record.ORGANIZATION_ACTIVE.CHECK ? 'green' : 'grey' }">
-                  {{ record.ORGANIZATION_ACTIVE.CHECK ? 'Đang Hoạt Động' : 'Ngừng Hoạt Động' }}
-                </span>
-              </template>
-              <template v-else-if="column.key === 'approveAction'">
-                <template v-if="!record.OBJECT_APPROVED.CHECK">
-                  <button class="redButton" @click="confirmApprove(record._id)">Phê Duyệt</button>
-                </template>
-                <template v-else>
-                  <span class="approvedText"> Đã Phê Duyệt</span>
-                </template>
-              </template>
-              <template v-else>
-                <button class="blueButton" @click="viewDetail(record)">Xem Chi Tiết</button>
-              </template>
-            </template>
-          </a-table>
-          <div class="pagination">
-            <button @click="previousPage('unactive')" :disabled="currentPage.unactive === 1">Previous</button>
-            <span>Page {{ currentPage.unactive }} of {{ totalPages.unactive }}</span>
-            <button @click="nextPage('unactive')" :disabled="currentPage.unactive === totalPages.unactive">Next</button>
-          </div>
+        <div
+          v-show="currentTab !== '' && filteredOrganizations.length === 0"
+          class="organizationList"
+        >
+          <p>Không tìm thấy tổ chức phù hợp.</p>
         </div>
       </a-spin>
     </div>
+
     <!-- Selected Organization Detail -->
-    <div ref="organizationDetail" v-if="selectedOrganization" class="organizationDetail">
+    <div
+      ref="organizationDetail"
+      v-if="selectedOrganization"
+      class="organizationDetail"
+    >
       <div>
         <h2>Thông tin chi tiết tổ chức</h2>
         <div class="organizationDetail2">
-          <p><strong>Tên tổ chức:</strong> {{ selectedOrganization.ORGANIZATION_NAME }}</p>
-          <p><strong>Email tổ chức:</strong> {{ selectedOrganization.ORGANIZATION_EMAIL }}</p>
-          <p><strong>Điện thoại tổ chức:</strong> {{ selectedOrganization.ORGANIZATION_PHONE }}</p>
-          <p><strong>Trạng thái hoạt động:</strong> {{ selectedOrganization.ORGANIZATION_ACTIVE.CHECK ? 'Đang Hoạt Động' : 'Ngừng Hoạt Động' }}</p>
-          <p><strong>Xét duyệt tổ chức:</strong> {{ selectedOrganization.OBJECT_APPROVED.CHECK ? 'Đã Được Duyệt' : 'Chưa Được Duyệt' }}</p>
-          <p><strong>Ngày đăng ký:</strong> {{ formattedRegisterDate(selectedOrganization.REGISTER_DATE) }}</p>
+          <p>
+            <strong>Tên tổ chức:</strong>
+            {{ selectedOrganization.ORGANIZATION_NAME }}
+          </p>
+          <p>
+            <strong>Email tổ chức:</strong>
+            {{ selectedOrganization.ORGANIZATION_EMAIL }}
+          </p>
+          <p>
+            <strong>Điện thoại tổ chức:</strong>
+            {{ selectedOrganization.ORGANIZATION_PHONE }}
+          </p>
+          <p>
+            <strong>Trạng thái hoạt động:</strong>
+            {{
+              selectedOrganization.ORGANIZATION_ACTIVE.CHECK
+                ? "Đang Hoạt Động"
+                : "Ngừng Hoạt Động"
+            }}
+          </p>
+          <p>
+            <strong>Xét duyệt tổ chức:</strong>
+            {{
+              selectedOrganization.OBJECT_APPROVED.CHECK
+                ? "Đã Được Duyệt"
+                : "Chưa Được Duyệt"
+            }}
+          </p>
+          <p>
+            <strong>Ngày đăng ký:</strong>
+            {{ formattedRegisterDate(selectedOrganization.REGISTER_DATE) }}
+          </p>
         </div>
       </div>
-      <button class="blueButton" @click="viewUsers(selectedOrganization)">Xem Danh Sách Người Dùng</button>
+      <button class="blueButton" @click="viewUsers(selectedOrganization)">
+        Xem Danh Sách Người Dùng
+      </button>
     </div>
   </div>
 </template>
 
 <script>
-import moment from 'moment';
-import Swal from 'sweetalert2';
-import axiosClient from '../../api/axiosClient';
+import { Pagination, Spin, Table } from "ant-design-vue";
+import moment from "moment";
+import Swal from "sweetalert2";
+import axiosClient from "../../api/axiosClient";
 
 export default {
-  name: 'OrganizationsList',
+  name: "OrganizationsList",
+  components: {
+    Spin,
+    Table,
+    Pagination,
+  },
   data() {
     return {
       isLogin: true,
-      activeTab: 'all',
       isLoading: false,
-      allOrganizations: [],
-      unapprovedOrganizations: [],
-      approvedOrganizations: [],
-      activeOrganizations: [],
       columns: [
-        { title: "Tên tổ chức", dataIndex: "ORGANIZATION_NAME", key: "ORGANIZATION_NAME" },
-        { title: "Số lượng User", dataIndex: "USER_COUNT", key: "USER_COUNT" },
-        { title: "Trạng Thái", dataIndex: "ORGANIZATION_ACTIVE", key: "ORGANIZATION_ACTIVE" },
-        { title: "Chi Tiết Tổ Chức", key: "action", scopedSlots: { customRender: "action" } },
-        { title: "Duyệt Tổ Chức", key: "approveAction", scopedSlots: { customRender: "action" } }
+        {
+          title: "Tên tổ chức",
+          dataIndex: "ORGANIZATION_NAME",
+          key: "ORGANIZATION_NAME",
+          width: 200,
+        },
+        {
+          title: "Số lượng User",
+          dataIndex: "USER_COUNT",
+          key: "USER_COUNT",
+          width: 150,
+        },
+        {
+          title: "Trạng Thái",
+          dataIndex: "ORGANIZATION_ACTIVE",
+          key: "ORGANIZATION_ACTIVE",
+          width: 150,
+        },
+        {
+          title: "Duyệt Tổ Chức",
+          key: "approveAction",
+          scopedSlots: { customRender: "action" },
+          width: 200,
+        },
+        {
+          title: "Chi Tiết Tổ Chức",
+          key: "action",
+          scopedSlots: { customRender: "action" },
+          width: 200,
+        },
       ],
       currentPage: {
         all: 1,
         unapproved: 1,
         approved: 1,
         active: 1,
-        unactive: 1
+        unactive: 1,
       },
       totalPages: {
         all: 1,
         unapproved: 1,
         approved: 1,
         active: 1,
-        unactive: 1
+        unactive: 1,
       },
-      perPage: 10,
-      // perPage: {
-      //   all: 5,
-      //   unapproved: 10,
-      //   approved: 10
-      // },
-      selectedOrganization: null
+      perPage: 5,
+      activeTab: "all",
+      searchKeyword: "", // Từ khóa tìm kiếm
+      selectedOrganization: null,
+      allOrganizations: [],
+      unapprovedOrganizations: [],
+      approvedOrganizations: [],
+      activeOrganizations: [],
+      unactiveOrganizations: [],
     };
   },
   mounted() {
-    this.fetchOrganizations('all');
-    this.fetchOrganizations('unapproved');
-    this.fetchOrganizations('approved');
-    this.fetchOrganizations('active');
-    this.fetchOrganizations('unactive');
+    // Gọi API lấy dữ liệu khi component được mount
+    this.fetchOrganizations("all");
+    this.fetchOrganizations("unapproved");
+    this.fetchOrganizations("approved");
+    this.fetchOrganizations("active");
+    this.fetchOrganizations("unactive");
   },
   methods: {
-    async fetchOrganizations(tab, page = this.currentPage[tab]) {
+    async fetchOrganizations(tab, page = 1) {
       this.isLoading = true;
       try {
-        const response = await axiosClient.get('/organization/getOrganizations', {
-          params: {
-            page,
-            perPage: this.perPage,
+        const response = await axiosClient.get(
+          `/organization/getOrganizations`,
+          {
+            params: {
+              tab: tab,
+              page: page,
+              perPage: this.perPage,
+              keyword: this.searchKeyword, // Thêm từ khóa vào params
+            },
           }
-        });
+        );
 
         if (response.status === 200) {
           const organizations = response.data.data;
+          const totalItems = response.data.total;
           switch (tab) {
-            case 'all':
+            case "all":
               this.allOrganizations = organizations;
-              this.totalPages.all = Math.ceil(response.data.total / this.perPage);
+              this.totalPages.all = Math.ceil(totalItems / this.perPage);
               this.currentPage.all = page;
               break;
-            case 'unapproved':
-              this.unapprovedOrganizations = organizations.filter(org => !org.OBJECT_APPROVED.CHECK);
-              this.totalPages.unapproved = Math.ceil(this.unapprovedOrganizations.length / this.perPage);
+            case "unapproved":
+              this.unapprovedOrganizations = organizations;
+              this.totalPages.unapproved = Math.ceil(totalItems / this.perPage);
               this.currentPage.unapproved = page;
               break;
-            case 'approved':
-              this.approvedOrganizations = organizations.filter(org => org.OBJECT_APPROVED.CHECK);
-              this.totalPages.approved = Math.ceil(this.approvedOrganizations.length / this.perPage);
+            case "approved":
+              this.approvedOrganizations = organizations;
+              this.totalPages.approved = Math.ceil(totalItems / this.perPage);
               this.currentPage.approved = page;
               break;
-            case 'active':
-              this.activeOrganizations = organizations.filter(org => org.ORGANIZATION_ACTIVE.CHECK);
-              this.totalPages.active = Math.ceil(this.activeOrganizations.length / this.perPage);
+            case "active":
+              this.activeOrganizations = organizations;
+              this.totalPages.active = Math.ceil(totalItems / this.perPage);
               this.currentPage.active = page;
               break;
-            case 'unactive':
-              this.unactiveOrganizations = organizations.filter(org => !org.ORGANIZATION_ACTIVE.CHECK);
-              this.totalPages.unactive = Math.ceil(this.unactiveOrganizations.length / this.perPage);
+            case "unactive":
+              this.unactiveOrganizations = organizations;
+              this.totalPages.unactive = Math.ceil(totalItems / this.perPage);
               this.currentPage.unactive = page;
               break;
             default:
               break;
           }
         } else {
-          console.error('Error fetching organizations:', response.statusText);
+          console.error("Error fetching organizations:", response.statusText);
         }
       } catch (error) {
-        console.error('Error fetching organizations:', error);
+        console.error("Error fetching organizations:", error);
       } finally {
-      setTimeout(() => {
         this.isLoading = false;
-      }, 500);
-    }
-  },
-
-  viewDetail(organization) {
-    this.isLoading = true;
-    setTimeout(() => {
+      }
+    },
+    viewDetail(organization) {
       this.selectedOrganization = organization;
       this.scrollToOrganizationDetail();
-      this.isLoading = false;
-    }, 500);
-  },
-  scrollToOrganizationDetail() {
-    const element = this.$refs.organizationDetail;
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  },
+    },
+    scrollToOrganizationDetail() {
+      const element = this.$refs.organizationDetail;
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    },
     formattedRegisterDate(date) {
-      return moment(date).format('HH:mm DD/MM/YYYY');
+      return moment(date).format("HH:mm DD/MM/YYYY");
     },
     viewUsers(organization) {
-    this.isLoading = true;
-    setTimeout(() => {
-      this.$router.push({ name: 'UsersList', params: { id: organization._id } });
-      this.isLoading = false;
-    }, 500);
-  },
-  previousPage(tab) {
-    if (this.currentPage[tab] > 1) {
-      this.isLoading = true;
-      setTimeout(() => {
-        this.currentPage[tab]--;
-        this.fetchOrganizations(tab, this.currentPage[tab]);
-        this.isLoading = false;
-      }, 500);
-    }
-  },
-  nextPage(tab) {
-    if (this.currentPage[tab] < this.totalPages[tab]) {
-      this.isLoading = true;
-      setTimeout(() => {
-        this.currentPage[tab]++;
-        this.fetchOrganizations(tab, this.currentPage[tab]);
-        this.isLoading = false;
-      }, 500);
-    }
-  },
+      this.$router.push({
+        name: "UsersList",
+        params: { id: organization._id },
+      });
+    },
     async approveOrganization(organizationId) {
       try {
-        const response = await axiosClient.post('/admin/approvedOrganizations', {
-          organizationId,
-          OBJECT_APPROVED: true
-        });
+        const response = await axiosClient.post(
+          "/admin/approvedOrganizations",
+          {
+            organizationId,
+            OBJECT_APPROVED: true,
+          }
+        );
 
         if (response.status === 200) {
-          const approvedOrg = this.allOrganizations.find(org => org._id === organizationId);
+          const approvedOrg = this.allOrganizations.find(
+            (org) => org._id === organizationId
+          );
           if (approvedOrg) {
             approvedOrg.OBJECT_APPROVED.CHECK = true;
           }
 
-          if (this.selectedOrganization && this.selectedOrganization._id === organizationId) {
+          if (
+            this.selectedOrganization &&
+            this.selectedOrganization._id === organizationId
+          ) {
             this.selectedOrganization.OBJECT_APPROVED.CHECK = true;
           }
 
-          // Refresh data for approved tab if applicable
-          if (this.activeTab === 'approved') {
-            this.fetchOrganizations('approved', this.currentPage.approved);
+          if (this.currentTab === "approved") {
+            this.fetchOrganizations("approved", this.currentPage.approved);
           }
 
-          Swal.fire('Thành công', 'Tổ chức đã được phê duyệt thành công', 'success');
+          Swal.fire(
+            "Thành công",
+            "Tổ chức đã được phê duyệt thành công",
+            "success"
+          );
         } else {
-          Swal.fire('Lỗi', 'Có lỗi xảy ra khi phê duyệt tổ chức', 'error');
-          console.error('Error approving organization:', response.statusText);
+          Swal.fire("Lỗi", "Có lỗi xảy ra khi phê duyệt tổ chức", "error");
+          console.error("Error approving organization:", response.statusText);
         }
       } catch (error) {
-        Swal.fire('Lỗi', 'Có lỗi xảy ra khi phê duyệt tổ chức', 'error');
-        console.error('Error approving organization:', error);
+        Swal.fire("Lỗi", "Có lỗi xảy ra khi phê duyệt tổ chức", "error");
+        console.error("Error approving organization:", error);
       }
     },
     confirmApprove(organizationId) {
       Swal.fire({
-        title: 'Bạn có chắc chắn muốn phê duyệt tổ chức này?',
-        icon: 'warning',
+        title: "Bạn có chắc chắn muốn phê duyệt tổ chức này?",
+        icon: "warning",
         showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Phê Duyệt',
-        cancelButtonText: 'Hủy'
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Phê Duyệt",
+        cancelButtonText: "Hủy",
       }).then((result) => {
         if (result.isConfirmed) {
           this.approveOrganization(organizationId);
@@ -424,10 +386,55 @@ export default {
     },
     changeTab(tab) {
       this.activeTab = tab;
-      this.currentPage[tab] = 1;
+      if (!this.currentPage[tab]) {
+        this.currentPage[tab] = 1;
+      }
+      if (!this.totalPages[tab]) {
+        this.totalPages[tab] = 1;
+      }
       this.fetchOrganizations(tab);
-    }
-  }
+    },
+    getOrganizations(tab) {
+      switch (tab) {
+        case "all":
+          return this.allOrganizations;
+        case "unapproved":
+          return this.unapprovedOrganizations;
+        case "approved":
+          return this.approvedOrganizations;
+        case "active":
+          return this.activeOrganizations;
+        case "unactive":
+          return this.unactiveOrganizations;
+        default:
+          return [];
+      }
+    },
+    handlePageChange(page) {
+      this.fetchOrganizations(this.currentTab, page);
+    },
+    handleSearch() {
+      this.currentPage[this.currentTab] = 1;
+      this.fetchOrganizations(this.currentTab);
+    },
+  },
+  computed: {
+    currentTab() {
+      return this.activeTab || "all";
+    },
+    filteredOrganizations() {
+      const keyword = this.searchKeyword.toLowerCase();
+      const organizations = this.getOrganizations(this.currentTab);
+
+      if (keyword.trim() === "") {
+        return organizations;
+      }
+
+      return organizations.filter((org) =>
+        org.ORGANIZATION_NAME.toLowerCase().includes(keyword)
+      );
+    },
+  },
 };
 </script>
 
@@ -439,16 +446,16 @@ export default {
 }
 
 h2 {
-    text-align: center;
-    font-size: 24px;
-    font-weight: bold;
-    color: #333;
-    margin-bottom: 20px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    border-bottom: 2px solid #4CAF50;
-    padding-bottom: 5px;
-    }
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-bottom: 2px solid #4caf50;
+  padding-bottom: 5px;
+}
 
 .navigation {
   display: flex;
@@ -469,7 +476,7 @@ h2 {
 }
 
 .navigation li.activeTab {
-  background-color: #4CAF50;
+  background-color: #4caf50;
 }
 
 .organizationList {
@@ -478,6 +485,13 @@ h2 {
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   margin-bottom: 20px;
+  overflow-x: auto;
+  min-width: 800px;
+}
+
+.organizationList .ant-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
 }
 
 .organizationDetail {
@@ -504,8 +518,8 @@ h2 {
   margin-right: 5px;
 }
 
-
-.blueButton, .approveButton {
+.blueButton,
+.approveButton {
   background-color: #1890ff;
   color: #fff;
   border: none;
@@ -527,7 +541,8 @@ h2 {
   transition: background-color 0.3s ease;
 }
 
-.blueButton:hover, .approveButton:hover {
+.blueButton:hover,
+.approveButton:hover {
   background-color: #40a9ff;
 }
 
@@ -541,23 +556,8 @@ h2 {
 
 .pagination {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  justify-content: center;
   margin-top: 20px;
-}
-
-.pagination button {
-  background-color: #1890ff;
-  color: #fff;
-  border: none;
-  padding: 8px 16px;
-  cursor: pointer;
-  border-radius: 4px;
-  transition: background-color 0.3s ease;
-}
-
-.pagination button:hover {
-  background-color: #40a9ff;
 }
 
 .denied {
@@ -608,7 +608,46 @@ h2 {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
+.search-bar {
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.search-bar input[type="text"] {
+  width: 100%;
+  padding: 10px 15px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  transition: border-color 0.3s ease;
+}
+
+.search-bar input[type="text"]:focus {
+  outline: none;
+  border-color: #4caf50;
+}
+
+.search-bar input[type="text"]::placeholder {
+  color: #999;
+}
+
+.search-bar .search-icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
+.search-bar .search-icon svg {
+  width: 20px;
+  height: 20px;
+  fill: #888;
+}
 </style>
