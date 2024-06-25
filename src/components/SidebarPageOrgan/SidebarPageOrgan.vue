@@ -115,7 +115,7 @@ const showModal = () => {
 
 const logout = () => {
   localStorage.removeItem("token");
-  router.push("/user/login");
+  router.push("/login");
 };
 
 const handleCancel = () => {

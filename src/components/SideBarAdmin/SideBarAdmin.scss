@@ -1,11 +1,9 @@
 aside {
     display: flex;
     flex-direction: column;
-    // width: 50px;
+    width: var(--sidebar-width); 
     overflow: hidden;
     min-height: 100vh;
-    // padding: 1rem;
-    // background-color: #6c757d;
     transition: 0.2s ease-in-out;
 
     .flex {

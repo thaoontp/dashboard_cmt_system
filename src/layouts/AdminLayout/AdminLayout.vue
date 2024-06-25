@@ -29,7 +29,7 @@
             <SideBarAdmin />
         </div> -->
 
-        <div class="col-10 col-sm-10">
+        <div class="col-sm-10">
           <router-view></router-view>
         </div>
       </div>

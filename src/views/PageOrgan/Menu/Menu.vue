@@ -1,270 +1,258 @@
 <template>
-	<div class="package-management" v-if="isLoggedIn">
-		<h2>Danh sách các gói của hệ thống</h2>
+  <div class="package-management" v-if="isLoggedIn">
+    <div class="title">
+      <h2>Danh sách các gói của hệ thống</h2>
+    </div>
 
-	  <!-- Danh sách các gói -->
-	  <div class="package-list">
-		<div v-for="packageItem in packages" :key="packageItem._id" class="package-card">
-		  <h3><strong>{{ packageItem.TITLE }}</strong></h3>
-		  <hr>
-		  <p><b>Level:</b> {{ packageItem.LEVEL }}</p>
-		  <p><b>Giá:</b> {{ formatCurrency(packageItem.COST) }} VNĐ</p>
-		  <p><b>Số lượng sản phẩm:</b> {{ packageItem.NUMBER_OF_PRODUCT }}</p>
-		  <p><b>Số lượt bình luận:</b> {{ packageItem.NUMBER_OF_COMMENT }}</p>
-		  <p><b>Mô tả:</b> {{ packageItem.DESCRIPTION }}</p>
-		  <p><b>Giảm giá:</b> {{ packageItem.DISCOUNT }}%</p>
-		  <p><b>Thời gian:</b> {{ packageItem.MONTH }} tháng</p>
-		  <p><b>Giá đã giảm:</b> {{ formatCurrency(calculateDiscountedPrice(packageItem.COST, packageItem.DISCOUNT)) }} VNĐ</p>
+    <!-- Danh sách các gói -->
+    <div class="package-list">
+      <div
+        v-for="packageItem in packages"
+        :key="packageItem._id"
+        class="package-card"
+      >
+        <div class="card-header">
+          <h3>
+            <strong>{{ packageItem.TITLE }}</strong>
+          </h3>
+          <p style="margin-top: 10px">{{ packageItem.DESCRIPTION }}</p>
+        </div>
+        <hr />
+        <div class="card-body">
+          <p style="margin-top: 10px">
+            Giảm ngay {{ packageItem.DISCOUNT }}% khi mua gói này.
+          </p>
+          <p class="current-price" style="margin-top: 10px">
+            {{ formatCurrency(packageItem.COST) }}<span class="vnđ">VNĐ</span>
+          </p>
+          <p>
+            <b>Giá đã giảm:</b>
+            <span class="blinking">
+              {{
+                formatCurrency(
+                  calculateDiscountedPrice(
+                    packageItem.COST,
+                    packageItem.DISCOUNT
+                  )
+                )
+              }}
+              <span class="vnđ">VNĐ</span>
+            </span>
+          </p>
+        </div>
 
-		  <div class="actionItem">
-			<!-- <button v-if="isLoggedIn" @click="showModalUpdate(packageItem)" class="edit">
-			  <i class="fa-solid fa-pen"></i> Cập nhật
-			</button> -->
+        <div class="actionItem">
+          <button
+            v-if="isLoggedIn"
+            @click="showModal(packageItem)"
+            class="payment"
+          >
+            <i class="fa-solid fa-credit-card"></i> Mua ngay
+          </button>
+        </div>
 
-			<button v-if="isLoggedIn" @click="deletePackage(packageItem._id, packageItem.TITLE)" class="remove">
-				<i class="fa-solid fa-credit-card"></i> Mua ngay
-			</button>
-		  </div>
-		</div>
-	  </div>
+        <div class="card-footer">
+          <h5>Thông tin gói:</h5>
+          <p><b>Level:</b> {{ packageItem.LEVEL }}</p>
+          <p><b>Số lượng sản phẩm:</b> {{ packageItem.NUMBER_OF_PRODUCT }}</p>
+          <p><b>Số lượt bình luận:</b> {{ packageItem.NUMBER_OF_COMMENT }}</p>
+          <!-- <p><b>Mô tả:</b> {{ packageItem.DESCRIPTION }}</p> -->
+          <p><b>Thời gian:</b> {{ packageItem.MONTH }} tháng</p>
+        </div>
+      </div>
+    </div>
 
-	  
+    <!-- Modal -->
+    <a-modal
+      v-model:open="isModalVisible"
+      :class="'custom-modal'"
+      title="Thông tin gói sản phẩm"
+      :ok-text="'Mua hàng'"
+      @ok="purchasePackage"
+      @cancel="handleCancel"
+    >
+      <!-- Sử dụng v-if để hiển thị a-spin khi isLoading là true -->
+      <a-spin :spinning="isLoading" size="large">
+        <!-- Nội dung modal sẽ được bao bọc bởi a-spin -->
+        <div v-if="!isLoading">
+          <div v-if="selectedPackage">
+            <div class="card-header">
+              <h3>
+                <strong>{{ selectedPackage.TITLE }}</strong>
+              </h3>
+              <p style="margin-top: 10px">{{ selectedPackage.DESCRIPTION }}</p>
+            </div>
+            <hr />
 
-	  <!-- Modal xóa gói -->
-	  <a-modal
-		style="top: 40px; font-size: 20px;"
-		v-model:open="isModalDelete"
-		title="Xóa gói"
-		@ok="handleOkDelete"
-		@cancel="handleCancelDelete"
-		:ok-button-props="okButtonProps"
-		okText="Xác nhận"
-		cancelText="Đóng"
-		>
-		<p style="font-size: 17px;">Bạn có chắc muốn xóa gói: <strong>{{ selectedTitle  }}</strong> </p>
-	</a-modal>
+            <div class="card-body">
+              <p style="margin-top: 10px">
+                Giảm ngay {{ selectedPackage.DISCOUNT }}% khi mua gói này.
+              </p>
+              <p class="current-price" style="margin-top: 10px">
+                {{ formatCurrency(selectedPackage.COST) }}
+                <span class="vnđ">VNĐ</span>
+              </p>
+              <p>
+                <b>Giá đã giảm:</b>
+                <span class="discounted-price">
+                  {{
+                    formatCurrency(
+                      calculateDiscountedPrice(
+                        selectedPackage.COST,
+                        selectedPackage.DISCOUNT
+                      )
+                    )
+                  }}
+                  <span class="vnđ">VNĐ</span>
+                </span>
+              </p>
+            </div>
+            <div class="card-footer">
+              <h5>Thông tin gói:</h5>
+              <p><b>Level:</b> {{ selectedPackage.LEVEL }}</p>
+              <p>
+                <b>Số lượng sản phẩm:</b>
+                {{ selectedPackage.NUMBER_OF_PRODUCT }}
+              </p>
+              <p>
+                <b>Số lượt bình luận:</b>
+                {{ selectedPackage.NUMBER_OF_COMMENT }}
+              </p>
+              <p><b>Thời gian:</b> {{ selectedPackage.MONTH }} tháng</p>
+            </div>
+          </div>
 
-	</div>
-	<div v-else class="denied">
-		<h3 class="text-center mt-5">Vui lòng đăng nhập để xử dụng dịch vụ</h3>
-	</div>
-  </template>
+          <!-- Phần chọn phương thức thanh toán -->
+          <div class="actionItem">
+            <p class="blinking">Bạn có chắc chắn mua gói này???</p>
+          </div>
+          <div class="paymentMethod">
+            <div class="nameMethod">
+              <p><strong>Vui lòng chọn phương thức thanh toán:</strong></p>
+            </div>
+            <div class="payment-options">
+              <label for="momoPayment" class="payment-option">
+                <input
+                  class="payment-option-momo"
+                  type="radio"
+                  id="momoPayment"
+                  value="momo"
+                  v-model="paymentMethod"
+                />
+                <!-- MoMo -->
+                <img
+                  src="https://event.mediacdn.vn/thumb_w/1000/257767050295742464/image/cca/2023/9/17/momo-16949607838381240407833.jpg"
+                  alt="MoMo"
+                />
+              </label>
+              <label for="zalopayPayment" class="payment-option">
+                <input
+                  class="payment-option-zalo"
+                  type="radio"
+                  id="zalopayPayment"
+                  value="zalopay"
+                  v-model="paymentMethod"
+                />
+                <!-- ZaloPay -->
+                <img
+                  src="https://cdn.haitrieu.com/wp-content/uploads/2022/10/Logo-ZaloPay-Square.png"
+                  alt="ZaloPay"
+                />
+              </label>
+            </div>
+          </div>
+        </div>
+      </a-spin>
+    </a-modal>
+  </div>
 
+  <div v-else class="denied">
+    <h3 class="text-center mt-5">Vui lòng đăng nhập để xử dụng dịch vụ</h3>
+  </div>
+</template>
 
+<script>
+import { mapState } from "vuex";
+import axiosClient from "../../../api/axiosClient";
+import { message, Modal } from "ant-design-vue";
 
-  <script>
-import { mapState } from 'vuex';
-import axiosClient from '../../../api/axiosClient';
-import { message } from 'ant-design-vue';
-import { useStore } from 'vuex';
 export default {
+  components: {
+    "a-modal": Modal,
+  },
   computed: {
-    ...mapState(['isLoggedIn', 'packages']),
-	levels() {
-      return this.packages.map(packages => packages.LEVEL);
-    },
+    ...mapState(["isLoggedIn", "packages"]),
   },
   data() {
     return {
-      showAddModal: false,
-	  loading: false,
-      showUpdateModal: false,
-      selectedPackage: {},
-	  showEditModal: false,
-	  isModalDelete: false,
-      newPackage: {
-        TITLE: "",
-        LEVEL: "",
-        COST: "",
-        NUMBER_OF_PRODUCT: "",
-        NUMBER_OF_COMMENT: "",
-        DESCRIPTION: "",
-        DISCOUNT: "",
-        MONTH: "",
-      },
-	  activeInputId: null,
-	  errors: {
-        TITLE: "",
-        LEVEL: "",
-        COST: "",
-        NUMBER_OF_PRODUCT: "",
-        NUMBER_OF_COMMENT: "",
-        DESCRIPTION: "",
-        DISCOUNT: "",
-        MONTH: "",
-      },
-	  okButtonProps: {
-        style: {
-          background: "red",
-        },
-      },
+      isLoading: false,
+      isModalVisible: false,
+      selectedPackage: null,
+      paymentMethod: "momo",
     };
   },
   mounted() {
-    this.$store.dispatch('fetchPackages');
+    this.$store.dispatch("fetchPackages");
   },
   methods: {
-	calculateDiscountedPrice(originalPrice, discountPercentage) {
+    calculateDiscountedPrice(originalPrice, discountPercentage) {
       const discount = parseFloat(discountPercentage) / 100;
       const discountedPrice = originalPrice * (1 - discount);
-      return discountedPrice.toFixed(2); // Làm tròn đến 2 chữ số sau dấu thập phân
+      return discountedPrice.toFixed(2);
     },
 
-	formatCurrency(value) {
-      // Chuyển đổi số sang chuỗi và thêm dấu phân tách hàng nghìn
-      const formattedValue = parseFloat(value).toFixed(0).replace(/\d(?=(\d{3})+$)/g, '$&.');
+    formatCurrency(value) {
+      const formattedValue = parseFloat(value)
+        .toFixed(0)
+        .replace(/\d(?=(\d{3})+$)/g, "$&.");
       return formattedValue;
     },
 
-    showModalAdd() {
-      this.showAddModal = true;
-    },
-    showModalUpdate(packageItem) {
-      this.showEditModal  = true;
+    showModal(packageItem) {
       this.selectedPackage = packageItem;
+      this.isModalVisible = true;
     },
-	async handleEditPackage() {
-		try {
-			await this.$store.dispatch('updatePackage', this.selectedPackage);
-			this.showEditModal = false;
-			this.loading = true;
-		} catch (error) {
-			console.error('Error updating package:', error);
-			message.error('Lỗi khi cập nhật gói: ' + error.message);
-			this.loading = false;
-		}
-	},
-	// handleCancelEdit () {
-	// 	this.showModalUpdate = false;
-	// },
 
-	handleValidate(field) {
-		const { TITLE, LEVEL, COST, NUMBER_OF_PRODUCT, NUMBER_OF_COMMENT, DESCRIPTION, DISCOUNT, MONTH } = this.newPackage;
-
-		switch (field) {
-			case 'TITLE':
-				this.errors.TITLE = TITLE.trim() ? '' : 'Vui lòng nhập tiêu đề';
-				break;
-			case 'LEVEL':
-				// Kiểm tra xem level có hợp lệ không
-				const isValidLevel = LEVEL > 0;
-				// Kiểm tra xem level đã tồn tại trong danh sách levels không
-				const isDuplicateLevel = this.levels.includes(parseInt(this.newPackage.LEVEL));
-
-				// Thiết lập thông báo lỗi dựa trên điều kiện
-				if (!isValidLevel) {
-					this.errors.LEVEL = 'Vui lòng nhập level';
-				} else if (isDuplicateLevel) {
-					this.errors.LEVEL = 'Level đã tồn tại';
-				} else {
-					this.errors.LEVEL = ''; // Thiết lập thành rỗng nếu không có lỗi
-				}
-				break;
-			case 'COST':
-				this.errors.COST = COST > 0 ? '' : 'Giá phải lớn hơn 0';
-				break;
-			case 'NUMBER_OF_PRODUCT':
-				this.errors.NUMBER_OF_PRODUCT = NUMBER_OF_PRODUCT > 0 ? '' : 'Vui lòng nhập số lượng sản phẩm';
-				break;
-			case 'NUMBER_OF_COMMENT':
-				this.errors.NUMBER_OF_COMMENT = NUMBER_OF_COMMENT > 0 ? '' : 'Vui lòng nhập số lượt bình luận';
-				break;
-			case 'DESCRIPTION':
-				this.errors.DESCRIPTION = DESCRIPTION.trim() ? '' : 'Vui lòng nhập mô tả';
-				break;
-			case 'DISCOUNT':
-				this.errors.DISCOUNT = (DISCOUNT >= 10 && DISCOUNT <= 50) ? '' : 'Giảm giá phải trong khoảng từ 10 đến 50';
-				break;
-			case 'MONTH':
-				this.errors.MONTH = (MONTH >= 1 && MONTH <= 36) ? '' : 'Thời gian phải từ 1 đến 36 tháng';
-				break;
-			default:
-				break;
-		}
-	},
-
-    
-    async handleAddPackage() {
-		for (const field in this.newPackage) {
-			this.handleValidate(field);
-		}
-
-		// Kiểm tra xem có lỗi không
-		if (Object.values(this.errors).some(error => error)) {
-		console.log(this.errors);
-		return;
-		}
-		this.loading = true;
-      try {
-		const response = await axiosClient.post('/package/create', this.newPackage);
-		console.log('Package created:', response.data);
-		if (response.data.success) {
-			this.$store.dispatch('fetchPackages');
-			this.resetForm();
-			this.showAddModal = false;
-			this.loading = false;
-			message.success('Thêm gói thành công!');
-			
-		} else {
-		const { errors } = response.data;
-		if (errors && errors.length > 0) {
-			errors.forEach(error => {
-			message.error(error);
-			});
-		} else {
-			message.error('Lỗi khi thêm gói.');
-			}
-		}
-	} catch (error) {
-		console.error('Error creating package:', error);
-		this.loading = false;
-		message.error('Lỗi khi thêm gói.');
-  	}
+    handleOk() {
+      this.isModalVisible = false;
     },
-	async deletePackage(packageId, packageTitle) {
-		try {
-			this.selectedTitle = packageTitle;
-			this.isModalDelete = true;
-			this.selectedPackage = packageId;
-		} catch (error) {
-			console.error('Error deleting package:', error);
-		}
-	},
-	async handleOkDelete() {
-	try {
-		await this.$store.dispatch('deletePackage', this.selectedPackage);
-		this.isModalDelete = false;
-	} catch (error) {
-		console.error('Error deleting package:', error);
-	}
-	},
-	handleCancelDelete() {
-      this.isModalDelete = false;
-    },
+
     handleCancel() {
-      this.showAddModal = false;
-      this.resetForm();
+      this.isModalVisible = false;
     },
-    resetForm() {
-      this.newPackage = {
-        TITLE: '',
-        LEVEL: 1,
-        COST: 0,
-        NUMBER_OF_PRODUCT: 0,
-        NUMBER_OF_COMMENT: 0,
-        DESCRIPTION: '',
-        MONTH: 0,
-        DISCOUNT: 0,
-      };
+
+    async purchasePackage() {
+      this.isLoading = true;
+      try {
+        const requestData = {
+          packageId: this.selectedPackage._id,
+          paymentMethod: this.paymentMethod,
+        };
+
+        // Gửi yêu cầu lên server để xử lý thanh toán
+        const response = await axiosClient.post("/invoice/buy", requestData);
+
+        this.$router.push({
+          path: "/pages/invoice",
+          query: {
+            packageId: this.selectedPackage._id,
+            qrCodeUrl: response.data.url,
+            paymentLink: response.data.url,
+          },
+        });
+
+        this.isModalVisible = false;
+      } catch (error) {
+        console.error("Error purchasing package:", error);
+        message.error("Đã xảy ra lỗi khi đặt hàng. Vui lòng thử lại sau.");
+      } finally {
+        this.isLoading = false;
+      }
     },
-	
   },
 };
 </script>
 
-
-
-
-  <style lang="scss" scoped>
-  @import "./Menu.scss";
-  </style>
+<style lang="scss" scoped>
+@import "./Menu.scss";
+</style>

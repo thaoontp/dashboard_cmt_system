@@ -3,17 +3,20 @@
     <h2>Danh sách người dùng</h2>
     <div class="header-container d-flex">
       <div class="search-bar">
-        <a-input
-          ref="searchQuery"
-          class="inputSearch"
-          placeholder="Nhập từ khóa tìm kiếm"
-          type="search"
-          v-model="searchQuery.value"
-          @keyup.enter="handleSearch"
-        />
-        <span @click="handleSearch" class="iconSearch">
-          <i class="fa-solid fa-magnifying-glass"></i>
-        </span>
+        <div class="container-1">
+          <span @click="handleSearch" class="iconSearch">
+            <i class="fa-solid fa-magnifying-glass"></i>
+          </span>
+          <input
+            class="inputSearch"
+            placeholder="Nhập từ khóa tìm kiếm"
+            type="search"
+            id="search"
+            v-model="searchQuery"
+            @keyup.enter="handleSearch"
+            @input="debouncedSearchUsers"
+          />
+        </div>
       </div>
 
       <div class="blockbutton">
@@ -22,75 +25,79 @@
         </router-link>
       </div>
     </div>
-
-    <div class="contentPage" v-if="isLoggedIn">
-      <a-tabs v-model:activeKey="activeKey" @change="handleTabChange">
-        <a-tab-pane key="4" tab="Tất cả người dùng">
-          <!-- <h4>Danh sách tất cả người dùng</h4> -->
-          <a-table
-            :dataSource="allUsers"
-            :columns="columns"
-            rowKey="_id"
-            :pagination="false"
-          >
-          </a-table>
-          <a-pagination
-            :current="currentPage"
-            :total="totalCount"
-            :pageSize="pageSize"
-            @change="handlePageChange"
-          />
-        </a-tab-pane>
-        <a-tab-pane key="1" tab="Chưa active">
-          <h4>Danh sách người dùng chưa active</h4>
-          <a-table
-            :dataSource="inactiveUsers"
-            :columns="columnsInactive"
-            rowKey="_id"
-            :pagination="false"
-          >
-          </a-table>
-          <a-pagination
-            :current="currentPage"
-            :total="totalCount"
-            :pageSize="pageSize"
-            @change="handlePageChange"
-          />
-        </a-tab-pane>
-        <a-tab-pane key="2" tab="Đang hoạt động" force-render>
-          <!-- <h4>Danh sách người dùng đang hoạt động</h4> -->
-          <a-table
-            :dataSource="activeUsers"
-            :columns="columnsActive"
-            rowKey="_id"
-            :pagination="false"
-          >
-          </a-table>
-          <a-pagination
-            :current="currentPage"
-            :total="totalCount"
-            :pageSize="pageSize"
-            @change="handlePageChange"
-          />
-        </a-tab-pane>
-        <a-tab-pane key="3" tab="Bị block">
-          <!-- <h4>Danh sách người dùng bị block</h4> -->
-          <a-table
-            :dataSource="blockedUsers"
-            :columns="columnsBlocked"
-            rowKey="_id"
-            :pagination="false"
-          >
-          </a-table>
-          <a-pagination
-            :current="currentPage"
-            :total="totalCount"
-            :pageSize="pageSize"
-            @change="handlePageChange"
-          />
-        </a-tab-pane>
-      </a-tabs>
-    </div>
+    <a-spin :spinning="isLoading">
+      <div class="contentPage" v-if="isLoggedIn">
+        <a-tabs v-model:activeKey="activeKey" @change="handleTabChange">
+          <a-tab-pane key="4" tab="Tất cả người dùng">
+            <template v-if="allUsers.length > 0">
+              <a-table
+                :dataSource="allUsers"
+                :columns="columns"
+                rowKey="_id"
+                :pagination="false"
+              />
+              <a-pagination
+                :current="currentPage"
+                :total="totalCount"
+                :pageSize="pageSize"
+                @change="handlePageChange"
+              />
+            </template>
+            <template v-else>
+              <p class="no-results">Không có người dùng phù hợp.</p>
+            </template>
+          </a-tab-pane>
+          <a-tab-pane key="1" tab="Chưa active">
+            <h4>Danh sách người dùng chưa active</h4>
+            <a-table
+              :dataSource="inactiveUsers"
+              :columns="columnsInactive"
+              rowKey="_id"
+              :pagination="false"
+            >
+            </a-table>
+            <a-pagination
+              :current="currentPage"
+              :total="totalCount"
+              :pageSize="pageSize"
+              @change="handlePageChange"
+            />
+          </a-tab-pane>
+          <a-tab-pane key="2" tab="Đang hoạt động" force-render>
+            <!-- <h4>Danh sách người dùng đang hoạt động</h4> -->
+            <a-table
+              :dataSource="activeUsers"
+              :columns="columnsActive"
+              rowKey="_id"
+              :pagination="false"
+            >
+            </a-table>
+            <a-pagination
+              :current="currentPage"
+              :total="totalCount"
+              :pageSize="pageSize"
+              @change="handlePageChange"
+            />
+          </a-tab-pane>
+          <a-tab-pane key="3" tab="Bị block">
+            <!-- <h4>Danh sách người dùng bị block</h4> -->
+            <a-table
+              :dataSource="blockedUsers"
+              :columns="columnsBlocked"
+              rowKey="_id"
+              :pagination="false"
+            >
+            </a-table>
+            <a-pagination
+              :current="currentPage"
+              :total="totalCount"
+              :pageSize="pageSize"
+              @change="handlePageChange"
+            />
+          </a-tab-pane>
+        </a-tabs>
+      </div>
+    </a-spin>
   </div>
   <div v-else class="denied">
     <h3 class="text-center mt-5">Vui lòng đăng nhập để xử dụng dịch vụ</h3>
@@ -100,18 +107,17 @@
 <script>
 import axiosClient from "../../../api/axiosClient";
 import { mapState } from "vuex";
-import { ref } from 'vue';
+import _ from "lodash";
 
 export default {
   computed: {
     ...mapState(["isLoggedIn"]),
   },
-  setup() {
-    const searchQuery = ref('');
-    return { searchQuery };
-  },
   data() {
     return {
+      isLoading: false,
+      searchQuery: "",
+      debouncedSearchUsers: _.debounce(this.handleSearch, 300),
       activeKey: "4",
       currentPage: 1,
       pageSize: 10,
@@ -122,6 +128,7 @@ export default {
       blockedUsers: [],
       selectedUser: null,
       allActiveUsersVisible: false,
+      noResultsFound: false,
 
       columns: [
         {
@@ -234,25 +241,24 @@ export default {
       ],
     };
   },
-  async mounted() {
-    await this.fetchUsers();
+  mounted() {
+    this.fetchUsers();
   },
   methods: {
     async handleSearch() {
-      this.currentPage = 1; 
+      this.currentPage = 1;
       await this.fetchUsers();
-      const searchTerm = this.searchQuery.value;
-      console.log("Giá trị nhập vào ô tìm kiếm:", searchTerm);
     },
     async fetchUsers() {
-      const { activeKey, currentPage, pageSize } = this;
+      this.isLoading = true;
+      const { activeKey, currentPage, pageSize, searchQuery } = this;
       try {
         const response = await axiosClient.get("/user/getUsers", {
           params: {
             tabStatus: activeKey,
             page: currentPage,
             limit: pageSize,
-            searchQuery: this.searchQuery.value,
+            search: searchQuery,
           },
         });
 
@@ -276,8 +282,12 @@ export default {
           default:
             break;
         }
+
+        this.noResultsFound = users.length === 0 && totalCount === 0;
       } catch (error) {
         console.error("Error fetching users:", error);
+      } finally {
+        this.isLoading = false;
       }
     },
 
