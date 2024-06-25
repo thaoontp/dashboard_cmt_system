@@ -87,8 +87,10 @@
       </router-link>
     </div>
 
-    <!-- <div class="menu">
-      <router-link to="/admin/login" class="button">
+
+    <div class="menu">
+      <router-link to="/login" class="button">
+
         <span class="material-icons">
           <i class="fa-solid fa-right-to-bracket"></i>
         </span>

@@ -20,6 +20,9 @@ import PageOrganLayout from "@/layouts/PageOrganLayout/PageOrganLayout.vue"
 import HistoryPage from "@/views/PageOrgan/History/History.vue"
 import HomePageOrgan from "@/views/PageOrgan/HomePage/HomePage.vue"
 import MenuPage from "@/views/PageOrgan/Menu/Menu.vue"
+import HistoryPage from "@/views/PageOrgan/History/History.vue"
+import Invoice from "@/views/PageOrgan/Invoice/Invoice.vue"
+
 
 import store from "@/store"
 import OrganizationsList from '../components/Organization/OrganizationsList.vue'
@@ -67,7 +70,7 @@ const routes = [
 		}
 	},
 	{
-		path: "/admin/login",
+		path: "/login",
 		component: LoginAdmin,
 		meta: {
 			layout: AuthLayout,
@@ -99,6 +102,28 @@ const routes = [
 		props: true,
 	},
 
+
+	// {
+	// 	path: '/users/:userId',
+	// 	name: 'UserDetail',
+	// 	component: UserDetail,
+	// 	meta: {
+	// 		layout: AdminLayout,
+	// 	},
+	// 	props: true,
+	// },
+	// {
+	// 	path: '/block-user/:userId',
+	// 	name: 'BlockUser',
+	// 	component: BlockUser,
+	// 	meta: {
+	// 		layout: AdminLayout,
+	// 	},
+	// 	props: true
+	// },
+
+	// Page Organization
+
 	{
 		path: "/pages/organizations",
 		component: HomePageOrgan,
@@ -109,6 +134,13 @@ const routes = [
 	{
 		path: "/pages/menu",
 		component: MenuPage,
+		meta: {
+			layout: PageOrganLayout,
+		}
+	},
+	{
+		path: "/pages/invoice",
+		component: Invoice,
 		meta: {
 			layout: PageOrganLayout,
 		}
