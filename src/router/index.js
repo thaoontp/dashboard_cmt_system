@@ -4,35 +4,36 @@ import AdminLayout from "../layouts/AdminLayout/AdminLayout.vue"
 import AuthLayout from "../layouts/AuthLayout/AuthLayout.vue"
 
 // User
-import RegisterUser from "../views/RegisterUser/RegisterUser.vue"
+// import RegisterUser from "../views/RegisterUser/RegisterUser.vue"
 
 // router Admin
 
-import LoginAdmin from "../views/LoginAdmin/LoginAdmin.vue"
-import HomeAdmin from "@/views/HomeAdmin/MainHome/Home.vue"
-import User from "@/views/HomeAdmin/User/User.vue"
 import BlockUserAdmin from "@/views/HomeAdmin/BlockUser/BlockUser.vue"
+import HomeAdmin from "@/views/HomeAdmin/MainHome/Home.vue"
 import Packages from "@/views/HomeAdmin/Packages/Packages.vue"
+import User from "@/views/HomeAdmin/User/User.vue"
+import LoginAdmin from "../views/LoginAdmin/LoginAdmin.vue"
 
 
 // Page Organization
 import PageOrganLayout from "@/layouts/PageOrganLayout/PageOrganLayout.vue"
+import HistoryPage from "@/views/PageOrgan/History/History.vue"
 import HomePageOrgan from "@/views/PageOrgan/HomePage/HomePage.vue"
 import MenuPage from "@/views/PageOrgan/Menu/Menu.vue"
-import HistoryPage from "@/views/PageOrgan/History/History.vue"
 
 import store from "@/store"
 import OrganizationsList from '../components/Organization/OrganizationsList.vue'
 import UsersList from '../components/Organization/UsersList.vue'
+import registerUser from '../components/pageOrganization/registerUser.vue'
 import RegisterOrganization from '../views/Organizations/RegisterOrgan/RegisterOrganization.vue'
 const routes = [
-	{
-		path: "/user/register",
-		component: RegisterUser,
-		meta: {
-			layout: AuthLayout,
-		}
-	},
+	// {
+	// 	path: "/user/register",
+	// 	component: RegisterUser,
+	// 	meta: {
+	// 		layout: AuthLayout,
+	// 	}
+	// },
 	// router Admin
 	{
 		path: "/",
@@ -98,26 +99,6 @@ const routes = [
 		props: true,
 	},
 
-	// {
-	// 	path: '/users/:userId',
-	// 	name: 'UserDetail',
-	// 	component: UserDetail,
-	// 	meta: {
-	// 		layout: AdminLayout,
-	// 	},
-	// 	props: true,
-	// },
-	// {
-	// 	path: '/block-user/:userId',
-	// 	name: 'BlockUser',
-	// 	component: BlockUser,
-	// 	meta: {
-	// 		layout: AdminLayout,
-	// 	},
-	// 	props: true
-	// },
-
-	// Page Organization
 	{
 		path: "/pages/organizations",
 		component: HomePageOrgan,
@@ -137,6 +118,13 @@ const routes = [
 		component: HistoryPage,
 		meta: {
 			layout: PageOrganLayout,
+		}
+	},
+	{
+		path: "/register",
+		component: registerUser,
+		meta: {
+			layout: AuthLayout,
 		}
 	},
 
