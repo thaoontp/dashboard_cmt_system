@@ -1,62 +1,122 @@
 .containPage {
-  padding: 20px 30px;
+  padding: 20px 40px;
+  background-color: #f0f2f5;
+  text-align: center;
+}
 
-  .header-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    // margin-bottom: 10px;
-  }
-  
-  // .search-bar {
-  //   flex-grow: 1; /* Chia sẻ khoảng trống để nút nằm bên phải */
-  //   padding: 30px;
-  //   border-radius: 20px;
-  // }
-  .search-bar {
-    position: relative;
-    // border-radius: 20px;
-    width: 200px;
-    margin-bottom: 18px;
+.containPage h2 {
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-bottom: 2px solid #4CAF50;
+  padding-bottom: 5px;
+}
 
-    .inputSearch {
-      padding: 7px 13px;
-      margin-left: 20px;
-      background-color: #ccc;
-      border: none;
-      outline: none;
-      // border-bottom-left-radius: 20px;
-      // border-top-left-radius: 20px;
-    }
+.containPage .header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 
-    .iconSearch {
-      // border-radius: 20px;
-      position: absolute;
-      right: 0px; /* Điều chỉnh khoảng cách giữa icon và input */
-      top: 50%;
-      transform: translateY(-50%);
-      cursor: pointer;
-    }
-  }
-  
-  
+.containPage .search-bar {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 400px;
+  margin-bottom: 18px;
+}
 
+.container-1{
+  width: 300px;
+  vertical-align: middle;
+  white-space: nowrap;
+  position: relative;
+  margin-left: 20px;
+}
 
-  .blockbutton {
-      margin-right: 20px;
-      background-color: #ff4d4f; 
-      border-color: #b71c1c; 
-      border-radius: 10px;
-      color: #fff; 
-      &:hover {
-          background-color: #ff7875;
-          border-color: #ff7875;
-      }
-  }
+.container-1 input#search{
+  width: 350px;
+  height: 40px;
+  background: #08947db8;
+  border: none;
+  font-size: 11pt;
+  float: left;
+  color: #63717f;
+  padding-left: 45px;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
 
-  .contentPage {
-      padding: 0px 20px 20px 20px;
-      border-radius: 10px;
-      background-color: #eae2e24a;
-  }
+  -webkit-transition: background .55s ease;
+  -moz-transition: background .55s ease;
+  -ms-transition: background .55s ease;
+  -o-transition: background .55s ease;
+  transition: background .55s ease;
+}
+
+// .containPage .inputSearch {
+//   padding: 7px 13px;
+//   margin-left: 20px;
+//   background-color: #ccc;
+//   border: none;
+//   outline: none;
+//   flex: 1;
+// }
+
+.container-1 input#search::-webkit-input-placeholder {
+  color: #65737e;
+}
+.container-1 input#search:-moz-placeholder { /* Firefox 18- */
+  color: #65737e;  
+}
+.container-1 input#search::-moz-placeholder {  /* Firefox 19+ */
+  color: #65737e;  
+}
+.container-1 input#search:-ms-input-placeholder {  
+  color: #65737e;  
+}
+
+.container-1 input#search:hover, .container-1 input#search:focus, .container-1 input#search:active{
+  outline:none;
+  background: #70c2b4b8;
+}
+
+.containPage .iconSearch {
+  position: absolute;
+  bottom: 7px;
+  left: 0px;
+  margin-left: 17px;
+  margin-top: 17px;
+  z-index: 1;
+  color: #4f5b66;
+  flex: 1;
+}
+
+.containPage .blockbutton {
+  margin-right: 20px;
+  background-color: #ff4d4f; 
+  border-color: #b71c1c; 
+  border-radius: 10px;
+  color: #fff; 
+}
+
+.containPage .blockbutton:hover {
+  background-color: #ff7875;
+  border-color: #ff7875;
+}
+
+.containPage .contentPage {
+  padding: 0px 20px 20px 20px;
+  border-radius: 10px;
+  background-color: #eae2e24a;
+}
+
+.containPage .no-results {
+  margin-top: 20px;
+  text-align: center;
+  color: #999;
 }

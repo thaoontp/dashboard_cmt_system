@@ -1,5 +1,6 @@
 <template>
 	<div class="package-management" v-if="isLoggedIn">
+		<h2>Danh sách các gói của hệ thống</h2>
 	  <!-- Nút thêm gói -->
 	  <div class="ml-auto">
 		<button v-if="isLoggedIn" @click="showModalAdd" class="btnAdd">
