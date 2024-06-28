@@ -90,6 +90,7 @@
                   <span class="approvedText"> Đã Phê Duyệt</span>
                 </template>
               </template>
+
               <template v-else>
                 <button class="blueButton" @click="viewDetail(record)">
                   Xem Chi Tiết
@@ -193,10 +194,10 @@ export default {
           width: 200,
         },
         {
-          title: "Số lượng User",
+          title: "Số lượng Người Dùng",
           dataIndex: "USER_COUNT",
           key: "USER_COUNT",
-          width: 150,
+          width: 120,
         },
         {
           title: "Trạng Thái",
@@ -208,13 +209,13 @@ export default {
           title: "Duyệt Tổ Chức",
           key: "approveAction",
           scopedSlots: { customRender: "action" },
-          width: 200,
+          width: 150,
         },
         {
           title: "Chi Tiết Tổ Chức",
           key: "action",
           scopedSlots: { customRender: "action" },
-          width: 200,
+          width: 150,
         },
       ],
       currentPage: {
@@ -233,7 +234,7 @@ export default {
       },
       perPage: 5,
       activeTab: "all",
-      searchKeyword: "", // Từ khóa tìm kiếm
+      searchKeyword: "",
       selectedOrganization: null,
       allOrganizations: [],
       unapprovedOrganizations: [],
@@ -243,7 +244,6 @@ export default {
     };
   },
   mounted() {
-    // Gọi API lấy dữ liệu khi component được mount
     this.fetchOrganizations("all");
     this.fetchOrganizations("unapproved");
     this.fetchOrganizations("approved");

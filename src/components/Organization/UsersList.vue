@@ -5,15 +5,15 @@
       Back to Organizations
     </button>
     <div class="userSearch">
-      <label for="userSearchInput">Tìm kiếm User:</label>
       <input
         type="text"
         id="userSearchInput"
-        v-model="userSearchInput"
+        v-model="search"
         :placeholder="placeholderText"
-        @input="debouncedSearchUsers"
+        @input="debouncedSearch"
+        class="searchInput"
       />
-      <button class="blueButton" @click="searchUsers">Tìm kiếm</button>
+      <button class="searchButton" @click="searchUsers">Tìm kiếm</button>
     </div>
     <ul class="navigation">
       <li :class="{ activeTab: activeTab === 'all' }" @click="changeTab('all')">
@@ -42,6 +42,7 @@
     <table class="custom-table">
       <thead>
         <tr>
+          <th class="fixedColumn sttColumn">STT</th>
           <th class="fixedColumn">User Name</th>
           <th class="fixedColumn">Full Name</th>
           <th class="fixedColumn">Trạng thái</th>
@@ -49,7 +50,8 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="user in filteredUsers" :key="user._id">
+        <tr v-for="(user, index) in currentUsers" :key="user._id">
+          <td>{{ (currentPage[activeTab] - 1) * limit + index + 1 }}</td>
           <td>{{ user.USERNAME }}</td>
           <td>{{ user.FULLNAME }}</td>
           <td>
@@ -81,21 +83,15 @@
     </table>
 
     <!-- Pagination -->
-    <a-pagination
-      :current="currentPage"
-      :total="totalUsers"
-      :pageSize="limit"
-      @change="handlePaginationChange"
-      class="pagination"
-    />
-
-    <!-- Nút quay lại tổ chức -->
-    <!-- <div>
-      <button class="blueButton" @click="backToOrganizations">
-        Back to Organizations
-      </button>
-    </div> -->
-
+    <div class="pagination">
+      <a-pagination
+        :current="currentPage[activeTab]"
+        :total="totalPages[activeTab] * limit"
+        :page-size="limit"
+        @change="handlePageChange"
+        :hide-on-single-page="true"
+      />
+    </div>
     <!-- Loading spinner -->
     <div v-if="loading" class="loading-spinner"></div>
 
@@ -150,28 +146,36 @@
 </template>
 
 <script>
-import { Pagination as APagination, Modal } from "ant-design-vue";
+import { Input, Modal, Pagination } from "ant-design-vue";
 import _ from "lodash";
 import axiosClient from "../../api/axiosClient";
 
 export default {
   name: "UsersList",
   components: {
-    APagination,
+    Pagination,
+    "a-input-search": Input.Search,
   },
   props: ["id"],
   data() {
     return {
-      userSearchInput: "",
-      users: [],
-      currentPage: 1,
-      totalUsers: 0,
+      search: "",
+      allUsers: [],
+      activeUsers: [],
+      inactiveUsers: [],
+      blockedUsers: [],
       limit: 10,
       selectedUser: null,
       loading: false,
-      debouncedSearchUsers: _.debounce(this.searchUsers, 300),
+      debouncedSearch: _.debounce(this.searchUsers, 700),
       activeTab: "all",
-      tabPages: {
+      currentPage: {
+        all: 1,
+        active: 1,
+        inactive: 1,
+        blocked: 1,
+      },
+      totalPages: {
         all: 1,
         active: 1,
         inactive: 1,
@@ -181,24 +185,35 @@ export default {
   },
   computed: {
     placeholderText() {
-      return this.userSearchInput.trim() === ""
+      return this.search.trim() === ""
         ? "Vui lòng nhập tên hoặc tên tài khoản người dùng"
         : "";
     },
-    filteredUsers() {
-      const startIndex = (this.currentPage - 1) * this.limit;
-      return this.users.slice(startIndex, startIndex + this.limit);
+    currentUsers() {
+      switch (this.activeTab) {
+        case "all":
+          return this.allUsers;
+        case "active":
+          return this.activeUsers;
+        case "inactive":
+          return this.inactiveUsers;
+        case "blocked":
+          return this.blockedUsers;
+      }
     },
   },
   watch: {
-    currentPage() {
-      this.fetchUsersByOrganizationId();
+    currentPage: {
+      deep: true,
+      handler() {
+        this.fetchUsersByOrganizationId();
+      },
     },
     activeTab() {
       this.fetchUsersByOrganizationId();
     },
-    userSearchInput: _.debounce(function () {
-      this.currentPage = 1;
+    search: _.debounce(function () {
+      this.currentPage[this.activeTab] = 1;
       this.fetchUsersByOrganizationId();
     }, 300),
   },
@@ -216,9 +231,9 @@ export default {
               ORGANIZATION_ID: this.id,
             },
             params: {
-              page: this.currentPage,
+              page: this.currentPage[this.activeTab],
               limit: this.limit,
-              search: this.userSearchInput,
+              search: this.search,
               status: this.activeTab,
             },
           }
@@ -226,8 +241,32 @@ export default {
 
         if (response.status === 200) {
           const result = response.data;
-          this.users = result.data;
-          this.totalUsers = result.totalUsers;
+          const users = result.data;
+          const totalItems = result.totalUsers;
+          const page = this.currentPage[this.activeTab];
+
+          switch (this.activeTab) {
+            case "all":
+              this.allUsers = users;
+              this.totalPages.all = Math.ceil(totalItems / this.limit);
+              this.currentPage.all = page;
+              break;
+            case "active":
+              this.activeUsers = users;
+              this.totalPages.active = Math.ceil(totalItems / this.limit);
+              this.currentPage.active = page;
+              break;
+            case "inactive":
+              this.inactiveUsers = users;
+              this.totalPages.inactive = Math.ceil(totalItems / this.limit);
+              this.currentPage.inactive = page;
+              break;
+            case "blocked":
+              this.blockedUsers = users;
+              this.totalPages.blocked = Math.ceil(totalItems / this.limit);
+              this.currentPage.blocked = page;
+              break;
+          }
         } else {
           console.error("Error fetching users:", response.statusText);
         }
@@ -287,8 +326,8 @@ export default {
     backToOrganizations() {
       this.$router.push({ name: "OrganizationsList" });
     },
-    handlePaginationChange(page) {
-      this.currentPage = page;
+    handlePageChange(page) {
+      this.currentPage[this.activeTab] = page;
     },
     async handleAction(action) {
       this.loading = true;
@@ -297,17 +336,17 @@ export default {
       this.loading = false;
     },
     async searchUsers() {
-      this.currentPage = 1;
+      this.currentPage[this.activeTab] = 1;
       await this.fetchUsersByOrganizationId();
     },
     changeTab(tab) {
       this.activeTab = tab;
-      this.currentPage = this.tabPages[this.activeTab];
+      this.currentPage[this.activeTab] = this.currentPage[this.activeTab] || 1;
+      this.fetchUsersByOrganizationId();
     },
   },
 };
 </script>
-
 <style scoped>
 .containPage {
   max-width: 1200px;
@@ -320,77 +359,45 @@ export default {
 
 .userSearch {
   display: flex;
+  justify-content: center;
   align-items: center;
   margin-bottom: 20px;
 }
 
-.userSearch label {
-  margin-right: 10px;
-  font-size: 14px;
-}
-
-.userSearch input[type="text"],
-.userSearch button {
-  padding: 8px;
-  font-size: 14px;
-  height: 30px;
-  border-radius: 4px;
-}
-
-.userSearch input[type="text"] {
-  flex-grow: 1;
-  border: 1px solid #d9d9d9;
+.userSearch .searchInput {
+  width: 100%;
+  max-width: 400px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px 0 0 4px;
   outline: none;
-  transition: border-color 0.3s ease;
+  font-size: 16px;
+  transition: border-color 0.3s;
 }
 
-.userSearch input[type="text"]:focus {
+.userSearch .searchInput:focus {
   border-color: #1890ff;
 }
 
-.userSearch button {
-  min-width: 80px;
-  margin-left: 10px;
+.userSearch .searchButton {
+  padding: 10px 20px;
+  border: 1px solid #1890ff;
   background-color: #1890ff;
   color: white;
-  border: none;
+  border-radius: 0 4px 4px 0;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s, border-color 0.3s;
 }
 
-.userSearch button:hover {
+.userSearch .searchButton:hover {
   background-color: #40a9ff;
+  border-color: #40a9ff;
 }
 
-.userSearch button:active {
-  transform: translateY(1px);
-}
-
-.userSearch button.blueButton {
-  background-color: #1890ff;
-}
-
-.userSearch button.blueButton:hover {
-  background-color: #40a9ff;
-}
-
-.userSearch button.redButton {
-  background-color: #f5222d;
-}
-
-.userSearch button.redButton:hover {
-  background-color: #ff4d4f;
-}
-
-.userSearch button:disabled {
-  background-color: #d9d9d9;
-  cursor: not-allowed;
-}
-
-.userSearch input[type="text"]::placeholder,
-.userSearch input[type="text"]:-ms-input-placeholder,
-.userSearch input[type="text"]::-ms-input-placeholder {
-  color: #ccc;
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
 }
 
 .userDetail {
@@ -426,12 +433,6 @@ export default {
 }
 
 .userDetailActions {
-  margin-top: 20px;
-}
-
-.pagination {
-  display: flex;
-  justify-content: center;
   margin-top: 20px;
 }
 
@@ -502,9 +503,11 @@ export default {
 }
 
 .fixedColumn {
-  width: 25%;
-  min-width: 150px;
-  max-width: 300px;
+  width: 15%; /* Thêm kích thước cố định cho cột */
+}
+
+.fixedColumn.sttColumn {
+  width: 5%; /* Kích thước cố định cho cột STT */
 }
 
 .loading-spinner {
