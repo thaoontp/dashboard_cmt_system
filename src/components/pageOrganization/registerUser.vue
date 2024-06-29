@@ -13,7 +13,16 @@
       <!-- Nhập mật khẩu -->
       <div class="form-group">
         <label for="PASSWORD">Password: <span class="required">*</span></label>
-        <input type="password" id="PASSWORD" v-model="formData.PASSWORD" />
+        <div class="password-input-group">
+          <input
+            :type="showPassword ? 'text' : 'password'"
+            id="PASSWORD"
+            v-model="formData.PASSWORD"
+          />
+          <span @click="togglePasswordVisibility">
+            <i :class="showPassword ? 'fa fa-eye-slash' : 'fa fa-eye'"></i>
+          </span>
+        </div>
         <p v-if="errors.PASSWORD" class="error-message">
           {{ errors.PASSWORD }}
         </p>
@@ -23,11 +32,18 @@
         <label for="CONFIRM_PASSWORD"
           >Confirm Password: <span class="required">*</span></label
         >
-        <input
-          type="password"
-          id="CONFIRM_PASSWORD"
-          v-model="confirmPassword"
-        />
+        <div class="password-input-group">
+          <input
+            :type="showConfirmPassword ? 'text' : 'password'"
+            id="CONFIRM_PASSWORD"
+            v-model="confirmPassword"
+          />
+          <span @click="toggleConfirmPasswordVisibility">
+            <i
+              :class="showConfirmPassword ? 'fa fa-eye-slash' : 'fa fa-eye'"
+            ></i>
+          </span>
+        </div>
         <p v-if="errors.CONFIRM_PASSWORD" class="error-message">
           {{ errors.CONFIRM_PASSWORD }}
         </p>
@@ -61,8 +77,9 @@
             }}
           </button>
         </div>
-        <p v-if="errors.OTP" class="error-message">{{ errors.OTP }}</p>
+        <p v-if="errors.otp" class="error-message">{{ errors.otp }}</p>
       </div>
+
       <!-- Nhập địa chỉ -->
       <div class="form-group">
         <label for="ADDRESS">Address:</label>
@@ -74,22 +91,14 @@
         <input type="text" id="GENDER" v-model="formData.GENDER" />
       </div>
 
-      <!-- Đồng ý với các điều khoản -->
-      <div class="form-group terms">
-        <input type="checkbox" id="agreeTerms" v-model="agreeTerms" />
-        <label for="agreeTerms">Tôi đã đồng ý với các điều khoản</label>
-        <p v-if="errors.TERMS" class="error-message">{{ errors.TERMS }}</p>
-      </div>
-
       <button type="submit">{{ showOTPField ? "Xác Thực" : "Đăng Ký" }}</button>
     </form>
 
     <p v-if="message" class="message">{{ message }}</p>
     <p v-if="otpMessage" class="message">{{ otpMessage }}</p>
 
-    <!-- Đã có tài khoản -->
     <div class="login-link">
-      <p>Đã có tài khoản? <a @click="goToLogin">Đăng nhập</a></p>
+      <p>Bạn đã có tài khoản? <a @click="goToLogin">Đăng nhập</a></p>
     </div>
   </div>
 </template>
@@ -115,6 +124,8 @@ export default {
       showOTPField: false,
       otp: "",
       otpMessage: "",
+      showPassword: false,
+      showConfirmPassword: false,
       errors: {
         USERNAME: "",
         PASSWORD: "",
@@ -122,14 +133,18 @@ export default {
         FULLNAME: "",
         EMAIL: "",
         OTP: "",
-        TERMS: "", // Thêm lỗi điều khoản
       },
-      agreeTerms: false, // Biến kiểm tra đồng ý điều khoản
       otpResendDisabled: false,
-      otpResendCountdown: 60,
+      otpResendCountdown: null,
     };
   },
   methods: {
+    togglePasswordVisibility() {
+      this.showPassword = !this.showPassword;
+    },
+    toggleConfirmPasswordVisibility() {
+      this.showConfirmPassword = !this.showConfirmPassword;
+    },
     validateForm() {
       this.errors = {
         USERNAME: "",
@@ -138,41 +153,35 @@ export default {
         FULLNAME: "",
         EMAIL: "",
         OTP: "",
-        TERMS: "", // Thêm lỗi điều khoản
       };
 
       let valid = true;
 
       if (!this.formData.USERNAME) {
-        this.errors.USERNAME = "Username là bắt buộc";
+        this.errors.USERNAME = "Tên người dùng là bắt buộc.";
         valid = false;
       }
       if (!this.formData.PASSWORD) {
-        this.errors.PASSWORD = "Password bỏ trống";
+        this.errors.PASSWORD = "Mật khẩu là bắt buộc.";
         valid = false;
       }
       if (!this.confirmPassword) {
-        this.errors.CONFIRM_PASSWORD = "Confirm Password bỏ trống";
+        this.errors.CONFIRM_PASSWORD = "Xác nhận mật khẩu là bắt buộc.";
         valid = false;
       } else if (this.confirmPassword !== this.formData.PASSWORD) {
-        this.errors.CONFIRM_PASSWORD = "Password không đúng";
+        this.errors.CONFIRM_PASSWORD = "Mật khẩu không khớp.";
         valid = false;
       }
       if (!this.formData.FULLNAME) {
-        this.errors.FULLNAME = "Full name bỏ trống";
+        this.errors.FULLNAME = "Họ và tên là bắt buộc.";
         valid = false;
       }
       if (!this.formData.EMAIL) {
-        this.errors.EMAIL =
-          "bạn cần sử dụng email này trong trường hợp cần đặt lại mật khẩu";
+        this.errors.EMAIL = "Email là bắt buộc.";
         valid = false;
       }
       if (this.showOTPField && !this.otp) {
-        this.errors.OTP = "Mã OTP chưa hợp lệ";
-        valid = false;
-      }
-      if (!this.agreeTerms) {
-        this.errors.TERMS = "Bạn phải đồng ý với các điều khoản để tiếp tục";
+        this.errors.otp = "Mã OTP là bắt buộc.";
         valid = false;
       }
 
@@ -193,18 +202,23 @@ export default {
           GENDER: this.formData.GENDER,
         };
 
-        console.log("Payload data:", payload);
-
         try {
           const response = await axiosClient.post("/user/register", payload);
           this.message = response.data.message;
 
           if (response.data.success) {
             this.showOTPField = true;
+            this.startNewOTPTimer();
           }
         } catch (error) {
-          this.message =
-            error.response?.data?.message || "Đăng ký người dùng thất bại";
+          if (error.response?.data?.errors) {
+            const serverErrors = error.response.data.errors;
+            this.errors = { ...this.errors, ...serverErrors };
+          } else if (error.response?.data?.message) {
+            this.message = error.response.data.message;
+          } else {
+            this.message = "Đăng ký người dùng thất bại";
+          }
           console.error("Error:", error.response?.data);
         }
       } else {
@@ -219,7 +233,7 @@ export default {
             payload
           );
 
-          this.otpMessage = response.data.message;
+          // this.otpMessage = response.data.message;
           if (response.data.user && response.data.user.IS_ACTIVATED) {
             this.showOTPField = false;
 
@@ -232,10 +246,18 @@ export default {
                 this.$router.push("/admin/login");
               }
             });
+          } else {
+            this.startNewOTPTimer();
           }
         } catch (error) {
-          this.otpMessage =
-            error.response?.data?.message || "Xác thực OTP thất bại.";
+          if (error.response?.data?.errors) {
+            const serverErrors = error.response.data.errors;
+            this.errors = { ...this.errors, ...serverErrors };
+          } else if (error.response?.data?.message) {
+            this.errors.otp = error.response.data.message;
+          } else {
+            this.errors.otp = "Xác thực OTP thất bại.";
+          }
           console.error("Error:", error.response?.data);
         }
       }
@@ -249,9 +271,9 @@ export default {
         });
 
         if (response.data.success) {
-          this.otpMessage = "Mã OTP mới đã được gửi đến email của bạn.";
+          // this.otpMessage = "Mã OTP mới đã được gửi đến email của bạn.";
           this.otpResendDisabled = true;
-          this.startOTPTimer();
+          this.startNewOTPTimer();
         }
       } catch (error) {
         this.otpMessage =
@@ -259,15 +281,22 @@ export default {
         console.error("Error:", error.response?.data);
       }
     },
-    startOTPTimer() {
-      this.otpResendCountdown = 60;
-      const timer = setInterval(() => {
-        this.otpResendCountdown -= 1;
-        if (this.otpResendCountdown <= 0) {
-          clearInterval(timer);
+    startNewOTPTimer() {
+      this.otpResendCountdown = 30;
+      this.otpResendDisabled = true;
+
+      const countdown = () => {
+        if (this.otpResendCountdown > 0) {
+          setTimeout(() => {
+            this.otpResendCountdown--;
+            countdown();
+          }, 1000);
+        } else {
           this.otpResendDisabled = false;
         }
-      }, 1000);
+      };
+
+      countdown();
     },
     goToLogin() {
       this.$router.push("/admin/login");
@@ -278,39 +307,43 @@ export default {
 
 <style scoped>
 .register-form {
-  max-width: 600px; /* Tăng chiều rộng form */
+  max-width: 500px;
   margin: 0 auto;
-  padding: 40px; /* Tăng padding */
-  border: 1px solid #ccc;
-  border-radius: 10px; /* Bo tròn góc nhiều hơn */
-  background-color: #ffffff;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Tạo bóng cho form */
+  padding: 30px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 h2 {
   text-align: center;
-  font-size: 28px; /* Tăng kích thước chữ */
+  font-size: 26px;
   font-weight: bold;
   color: #333;
-  margin-bottom: 30px; /* Tăng khoảng cách dưới */
+  margin-bottom: 20px;
   text-transform: uppercase;
-  letter-spacing: 2px; /* Tăng khoảng cách giữa các chữ */
-  border-bottom: 3px solid #4caf50; /* Tăng độ dày đường viền dưới */
-  padding-bottom: 10px; /* Tăng padding dưới */
+  letter-spacing: 1px;
+  border-bottom: 2px solid #4caf50;
+  padding-bottom: 10px;
 }
 
 .form {
   display: flex;
   flex-direction: column;
+  gap: 15px;
 }
 
 .form-group {
-  margin-bottom: 20px; /* Tăng khoảng cách giữa các nhóm form */
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
 }
 
 label {
   font-weight: bold;
-  font-size: 16px; /* Tăng kích thước chữ */
+  font-size: 14px;
+  color: #555;
 }
 
 .required {
@@ -321,17 +354,19 @@ input[type="text"],
 input[type="password"],
 input[type="email"] {
   width: 100%;
-  padding: 12px; /* Tăng padding */
+  padding: 10px;
   border: 1px solid #ccc;
-  border-radius: 6px; /* Bo tròn góc nhiều hơn */
-  font-size: 16px;
-  transition: border-color 0.3s; /* Thêm hiệu ứng chuyển màu viền */
+  border-radius: 4px;
+  font-size: 14px;
+  transition: border-color 0.3s;
 }
 
 input[type="text"]:focus,
 input[type="password"]:focus,
 input[type="email"]:focus {
-  border-color: #4caf50; /* Đổi màu viền khi focus */
+  border-color: #4caf50;
+  outline: none;
+  box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
 }
 
 .otp-group {
@@ -340,9 +375,9 @@ input[type="email"]:focus {
 }
 
 .otp-group input[type="text"] {
-  width: calc(100% - 100px); /* Điều chỉnh chiều rộng để có đủ chỗ cho nút */
+  width: calc(100% - 100px);
   padding: 12px;
-  border-radius: 6px 0 0 6px; /* Bo tròn góc trái */
+  border-radius: 6px 0 0 6px;
 }
 
 .otp-group button {
@@ -351,10 +386,10 @@ input[type="email"]:focus {
   background-color: #007bff;
   color: #fff;
   border: none;
-  border-radius: 0 6px 6px 0; /* Bo tròn góc phải */
+  border-radius: 0 6px 6px 0;
   cursor: pointer;
   font-size: 14px;
-  transition: background-color 0.3s; /* Thêm hiệu ứng chuyển màu nền */
+  transition: background-color 0.3s;
 }
 
 .otp-group button:disabled {
@@ -363,52 +398,81 @@ input[type="email"]:focus {
 
 button[type="submit"] {
   width: 100%;
-  padding: 12px; /* Tăng padding */
-  background-color: #4caf50; /* Đổi màu nền */
+  padding: 12px;
+  background-color: #4caf50;
   color: #fff;
   border: none;
-  border-radius: 6px; /* Bo tròn góc */
+  border-radius: 4px;
   cursor: pointer;
-  font-size: 18px; /* Tăng kích thước chữ */
+  font-size: 16px;
   font-weight: bold;
-  transition: background-color 0.3s; /* Thêm hiệu ứng chuyển màu nền */
+  transition: background-color 0.3s;
 }
 
 button[type="submit"]:hover {
-  background-color: #388e3c; /* Đổi màu nền khi hover */
+  background-color: #388e3c;
 }
 
 .message {
-  margin-top: 20px; /* Tăng khoảng cách trên */
+  margin-top: 15px;
   text-align: center;
   font-weight: bold;
-  color: #333; /* Đổi màu chữ */
-  font-size: 16px; /* Tăng kích thước chữ */
+  color: #333;
+  font-size: 14px;
 }
 
 .error-message {
   color: red;
-  font-size: 14px;
-  margin-top: 5px; /* Tăng khoảng cách trên */
+  font-size: 12px;
 }
 
 .login-link {
-  margin-top: 20px; /* Tăng khoảng cách trên */
+  margin-top: 15px;
   text-align: center;
+}
+
+.login-link a {
+  color: blue;
+  text-decoration: none;
+  transition: color 0.3s, text-decoration 0.3s;
+}
+
+.login-link a:hover {
+  color: black;
+  text-decoration: underline;
 }
 
 .terms {
   display: flex;
   align-items: center;
-  margin-bottom: 20px; /* Tăng khoảng cách dưới */
+  gap: 10px;
 }
 
 .terms input[type="checkbox"] {
-  margin-right: 10px;
+  margin-right: 5px;
 }
 
 .terms label {
-  font-size: 14px; /* Tăng kích thước chữ */
+  font-size: 14px;
   font-weight: bold;
+}
+
+.password-input-group {
+  display: flex;
+  align-items: center;
+}
+
+.password-input-group input {
+  flex: 1;
+}
+
+.password-input-group span {
+  cursor: pointer;
+  margin-left: 8px;
+}
+
+.fa-eye,
+.fa-eye-slash {
+  font-size: 1.2em;
 }
 </style>
