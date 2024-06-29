@@ -33,11 +33,16 @@
         </span>
         <span class="text">History</span>
       </router-link>
-      <router-link v-if="isLoggedIn" to="/profile" class="button">
+      <router-link v-if="isLoggedIn" to="/pages/profile" class="button">
         <span class="material-icons"
           ><i class="fa-solid fa-user-circle"></i
         ></span>
         <span class="text">Profile</span>
+      </router-link>
+      <router-link v-if="isLoggedIn" to="/pages/instructions" class="button">
+        <span class="material-icons"
+          ><i class="fa-solid fa-chalkboard-user"></i></span>
+        <span class="text">Instructions</span>
       </router-link>
       <!-- <router-link to="/pages/registerUser" class="button">
         <span class="material-icons">
