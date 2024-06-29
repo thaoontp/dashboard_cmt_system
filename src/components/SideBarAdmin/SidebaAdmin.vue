@@ -1,20 +1,12 @@
 <template>
-  <aside :class="`${is_expanded ? 'is-expanded' : ''}`">
-    <div class="logo">
+  <aside :class="['sidebar', { 'is-expanded': is_expanded }]">
+    <!-- <div class="logo">
       <img :src="logoURL" alt="Vue" />
       <span class="titleWeb text-info"
         >COMMENTS<span class="text-warning">NE</span></span
       >
-    </div>
+    </div> -->
 
-    <!-- <Switch
-	  	:checked="theme === 'dark'"
-		@change="changeTheme"
-		checked-children="Dark"
-		un-checked-children="Light"
-	  /> -->
-    <!-- <br />
-	  <br /> -->
     <a-menu
       class="menu"
       :theme="theme"
@@ -124,7 +116,7 @@ import {
   MailOutlined,
   SettingOutlined,
 } from "@ant-design/icons-vue";
-import { ref } from "vue";
+import { ref, onMounted, onBeforeUnmount } from "vue";
 import { useRouter } from "vue-router";
 import logoURL from "../../assets/AuthHeader.png";
 
@@ -134,6 +126,23 @@ const current = ref("1");
 const router = useRouter();
 
 const is_expanded = ref(localStorage.getItem("is_expanded") === "true");
+
+const handleResize = () => {
+  if (window.innerWidth < 768) {
+    is_expanded.value = false;
+  } else {
+    is_expanded.value = localStorage.getItem("is_expanded") === "true";
+  }
+};
+
+onMounted(() => {
+  window.addEventListener('resize', handleResize);
+  handleResize();
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', handleResize);
+});
 
 const ToggleMenu = () => {
   is_expanded.value = !is_expanded.value;

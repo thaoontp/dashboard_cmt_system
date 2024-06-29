@@ -126,7 +126,7 @@
           <div class="actionItem">
             <p class="blinking">Bạn có chắc chắn mua gói này???</p>
           </div>
-          <div class="paymentMethod">
+          <div class="paymentGateway">
             <div class="nameMethod">
               <p><strong>Vui lòng chọn phương thức thanh toán:</strong></p>
             </div>
@@ -137,7 +137,7 @@
                   type="radio"
                   id="momoPayment"
                   value="momo"
-                  v-model="paymentMethod"
+                  v-model="paymentGateway"
                 />
                 <!-- MoMo -->
                 <img
@@ -151,7 +151,7 @@
                   type="radio"
                   id="zalopayPayment"
                   value="zalopay"
-                  v-model="paymentMethod"
+                  v-model="paymentGateway"
                 />
                 <!-- ZaloPay -->
                 <img
@@ -188,7 +188,7 @@ export default {
       isLoading: false,
       isModalVisible: false,
       selectedPackage: null,
-      paymentMethod: "momo",
+      paymentGateway: "momo",
     };
   },
   mounted() {
@@ -226,20 +226,17 @@ export default {
       try {
         const requestData = {
           packageId: this.selectedPackage._id,
-          paymentMethod: this.paymentMethod,
+          paymentGateway: this.paymentGateway,
         };
 
         // Gửi yêu cầu lên server để xử lý thanh toán
         const response = await axiosClient.post("/invoice/buy", requestData);
 
-        this.$router.push({
-          path: "/pages/invoice",
-          query: {
-            packageId: this.selectedPackage._id,
-            qrCodeUrl: response.data.url,
-            paymentLink: response.data.url,
-          },
-        });
+        // Lấy URL thanh toán từ response
+        const paymentUrl = response.data.url;
+
+        // Chuyển hướng người dùng đến URL thanh toán tương ứng
+        window.open(paymentUrl, "_blank");
 
         this.isModalVisible = false;
       } catch (error) {

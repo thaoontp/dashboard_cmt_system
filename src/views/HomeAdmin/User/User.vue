@@ -79,6 +79,7 @@
               @change="handlePageChange"
             />
           </a-tab-pane>
+
           <a-tab-pane key="3" tab="Bị block">
             <!-- <h4>Danh sách người dùng bị block</h4> -->
             <a-table
@@ -98,6 +99,21 @@
         </a-tabs>
       </div>
     </a-spin>
+    <a-modal
+      style="top: 40px; font-size: 20px"
+      v-model:open="isModalVisible"
+      title="Xác nhận hủy chặn người dùng"
+      @ok="handleOk"
+      @cancel="handleCancel"
+      okText="Xác nhận"
+      cancelText="Đóng"
+    >
+      <p style="font-size: 17px">
+        Bạn có chắc chắn muốn hủy chặn người dùng:
+        <strong>{{ selectedUser?.USERNAME }}</strong
+        >?
+      </p>
+    </a-modal>
   </div>
   <div v-else class="denied">
     <h3 class="text-center mt-5">Vui lòng đăng nhập để xử dụng dịch vụ</h3>
@@ -106,8 +122,10 @@
 
 <script>
 import axiosClient from "../../../api/axiosClient";
-import { mapState } from "vuex";
+import { mapActions, mapState } from "vuex";
+import { message } from 'ant-design-vue';
 import _ from "lodash";
+import { h } from "vue";
 
 export default {
   computed: {
@@ -115,6 +133,12 @@ export default {
   },
   data() {
     return {
+      isModalVisible: false,
+      okButtonProps: {
+        style: {
+          background: "red",
+        },
+      },
       isLoading: false,
       searchQuery: "",
       debouncedSearchUsers: _.debounce(this.handleSearch, 300),
@@ -200,6 +224,11 @@ export default {
           key: "FULLNAME",
         },
         {
+          title: "Giới tính",
+          dataIndex: "GENDER",
+          key: "GENDER",
+        },
+        {
           title: "Trạng thái",
           dataIndex: "IS_ACTIVATED",
           key: "IS_ACTIVATED",
@@ -238,6 +267,21 @@ export default {
             return text ? "Blocked" : "Blocked";
           },
         },
+        {
+          title: "Actions",
+          key: "actions",
+          customRender: ({ record }) => {
+            return h(
+              "Button",
+              {
+                class: "unblock-button",
+                type: "primary",
+                onClick: () => this.showUnblockModal(record),
+              },
+              "Unblock"
+            );
+          },
+        },
       ],
     };
   },
@@ -245,6 +289,7 @@ export default {
     this.fetchUsers();
   },
   methods: {
+    ...mapActions(['UnblockUser']),
     async handleSearch() {
       this.currentPage = 1;
       await this.fetchUsers();
@@ -300,6 +345,26 @@ export default {
     handlePageChange(page) {
       this.currentPage = page;
       this.fetchUsers();
+    },
+
+    showUnblockModal(user) {
+      this.selectedUser = user;
+      this.isModalVisible = true;
+    },
+
+    async handleOk() {
+      try {
+        await this.UnblockUser(this.selectedUser._id);
+        this.isModalVisible = false;
+        this.fetchUsers();
+      } catch (error) {
+        console.error('Error unblocking user:', error);
+        message.error('Error unblocking user');
+      }
+    },
+
+    handleCancel() {
+      this.isModalVisible = false;
     },
 
     showUserInfo(user) {

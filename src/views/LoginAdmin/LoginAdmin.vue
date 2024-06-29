@@ -19,7 +19,7 @@
                       </div>
 
                       <div class="fw-normal pb-2 desLogin">
-                        Đăng nhập với quyền Admin
+                        Chào mừng đến với hệ thống
                       </div>
 
                       <div class="group">
@@ -107,14 +107,17 @@ const toggleShowPassword = () => {
 };
 
 const login = async () => {
-  const success = await store.dispatch("login", {
+  const role = await store.dispatch("login", {
     username: username.value,
     password: password.value,
   });
-  if (success) {
+  if (role === 'admin') {
     router.push("/");
+  } else if (role === 'organ') {
+    router.push("/pages/organizations");
   }
 };
+
 </script>
 
 <style lang="scss" scoped>

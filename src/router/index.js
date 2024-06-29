@@ -21,10 +21,9 @@ import store from "@/store"
 import HistoryPage from "@/views/PageOrgan/History/History.vue"
 import HomePageOrgan from "@/views/PageOrgan/HomePage/HomePage.vue"
 import MenuPage from "@/views/PageOrgan/Menu/Menu.vue"
-
-
 import Invoice from "@/views/PageOrgan/Invoice/Invoice.vue"
-
+import Profile from "@/views/PageOrgan/Profile/Profile.vue"
+import Instructions from "@/views/PageOrgan/Instructions/Instructions.vue"
 
 import OrganizationsList from '../components/Organization/OrganizationsList.vue'
 import UsersList from '../components/Organization/UsersList.vue'
@@ -103,7 +102,6 @@ const routes = [
 		props: true,
 	},
 
-
 	// {
 	// 	path: '/users/:userId',
 	// 	name: 'UserDetail',
@@ -124,7 +122,6 @@ const routes = [
 	// },
 
 	// Page Organization
-
 	{
 		path: "/pages/organizations",
 		component: HomePageOrgan,
@@ -149,6 +146,20 @@ const routes = [
 	{
 		path: "/pages/history",
 		component: HistoryPage,
+		meta: {
+			layout: PageOrganLayout,
+		}
+	},
+	{
+		path: "/pages/profile",
+		component: Profile,
+		meta: {
+			layout: PageOrganLayout,
+		}
+	},
+	{
+		path: "/pages/instructions",
+		component: Instructions,
 		meta: {
 			layout: PageOrganLayout,
 		}
