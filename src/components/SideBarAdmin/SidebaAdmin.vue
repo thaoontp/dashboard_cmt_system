@@ -87,16 +87,14 @@
       </router-link>
     </div>
 
-
     <div class="menu">
       <router-link to="/login" class="button">
-
         <span class="material-icons">
           <i class="fa-solid fa-right-to-bracket"></i>
         </span>
         <span class="text">Login</span>
       </router-link>
-    </div> -->
+    </div>
 
     <div class="menu" @click="showModal">
       <div class="button">
@@ -154,7 +152,7 @@ const showModal = () => {
 
 const logout = () => {
   localStorage.removeItem("token");
-  router.push("/admin/login");
+  router.push("/login");
 };
 const handleCancel = () => {
   isModal.value = false;

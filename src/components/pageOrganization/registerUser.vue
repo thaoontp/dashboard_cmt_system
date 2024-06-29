@@ -243,7 +243,7 @@ export default {
               confirmButtonText: "Trở lại đăng nhập",
             }).then((result) => {
               if (result.isConfirmed) {
-                this.$router.push("/admin/login");
+                this.$router.push("/login");
               }
             });
           } else {
@@ -299,7 +299,7 @@ export default {
       countdown();
     },
     goToLogin() {
-      this.$router.push("/admin/login");
+      this.$router.push("/login");
     },
   },
 };

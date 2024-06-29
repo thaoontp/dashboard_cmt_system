@@ -26,8 +26,6 @@ import MenuPage from "@/views/PageOrgan/Menu/Menu.vue"
 import Invoice from "@/views/PageOrgan/Invoice/Invoice.vue"
 
 
-import store from "@/store"
-
 import OrganizationsList from '../components/Organization/OrganizationsList.vue'
 import UsersList from '../components/Organization/UsersList.vue'
 import registerUser from '../components/pageOrganization/registerUser.vue'
