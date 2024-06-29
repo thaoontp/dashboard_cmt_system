@@ -1,20 +1,11 @@
 <template>
   <div class="containPage">
     <h2>Danh sách người dùng thuộc tổ chức</h2>
-    <button class="blueButton backButton" @click="backToOrganizations">
-      Back to Organizations
+    <button class="iconButton backButton" @click="backToOrganizations">
+      <i class="fas fa-arrow-left"></i>
+      <!-- Sử dụng biểu tượng Font Awesome -->
     </button>
-    <div class="userSearch">
-      <label for="userSearchInput">Tìm kiếm User:</label>
-      <input
-        type="text"
-        id="userSearchInput"
-        v-model="userSearchInput"
-        :placeholder="placeholderText"
-        @input="debouncedSearchUsers"
-      />
-      <button class="blueButton" @click="searchUsers">Tìm kiếm</button>
-    </div>
+
     <ul class="navigation">
       <li :class="{ activeTab: activeTab === 'all' }" @click="changeTab('all')">
         Tất cả
@@ -38,69 +29,102 @@
         Đã Bị Khóa
       </li>
     </ul>
+    <div class="userSearch">
+      <input
+        type="text"
+        id="userSearchInput"
+        v-model="search"
+        :placeholder="placeholderText"
+        @input="debouncedSearch"
+        class="searchInput"
+      />
+      <button class="searchButton" @click="searchUsers">Tìm kiếm</button>
+    </div>
     <!-- Bảng danh sách người dùng -->
-    <table class="custom-table">
+    <table class="custom-table" v-if="currentUsers.length">
       <thead>
         <tr>
-          <th class="fixedColumn">User Name</th>
-          <th class="fixedColumn">Full Name</th>
+          <th class="fixedColumn sttColumn">STT</th>
+          <th class="fixedColumn">Tên Tài Khoản</th>
+          <th class="fixedColumn">Họ và Tên</th>
           <th class="fixedColumn">Trạng thái</th>
-          <th class="fixedColumn">Chi Tiết</th>
+          <th class="fixedColumn">Chi Tiết Người Dùng</th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="user in filteredUsers" :key="user._id">
+        <tr v-for="(user, index) in currentUsers" :key="user._id">
+          <td class="details-column">
+            {{ (currentPage[activeTab] - 1) * limit + index + 1 }}
+          </td>
           <td>{{ user.USERNAME }}</td>
           <td>{{ user.FULLNAME }}</td>
           <td>
-            <span
-              :style="{
-                color: user.IS_BLOCKED.CHECK
-                  ? 'red'
-                  : user.IS_ACTIVATED
-                  ? 'green'
-                  : 'orange',
-              }"
-            >
-              {{
-                user.IS_BLOCKED.CHECK
-                  ? "Đã Bị Khóa"
-                  : !user.IS_ACTIVATED
-                  ? "Chưa Xác Thực"
-                  : "Đang Hoạt Động"
-              }}
-            </span>
+            <div class="status-column">
+              <span
+                class="status-text"
+                :style="{
+                  color:
+                    user.IS_BLOCKED && user.IS_BLOCKED.CHECK
+                      ? 'red'
+                      : user.IS_ACTIVATED
+                      ? 'green'
+                      : 'orange',
+                }"
+              >
+                {{
+                  user.IS_BLOCKED && user.IS_BLOCKED.CHECK
+                    ? "Đã Bị Khóa"
+                    : !user.IS_ACTIVATED
+                    ? "Chưa Xác Thực"
+                    : "Đang Hoạt Động"
+                }}
+              </span>
+              <button
+                v-if="!user.IS_BLOCKED || !user.IS_BLOCKED.CHECK"
+                class="smallButton redButton"
+                @click="confirmToggleBlock(user)"
+              >
+                Block
+              </button>
+              <button
+                v-else
+                class="smallButton blueButton"
+                @click="confirmToggleBlock(user)"
+              >
+                Unlock
+              </button>
+            </div>
           </td>
-          <td>
-            <button class="blueButton" @click="showUserDetail(user)">
+          <td class="details-column">
+            <button
+              class="smallButton blueButton"
+              @click="showUserDetail(user)"
+            >
               Xem Người Dùng
             </button>
           </td>
         </tr>
       </tbody>
     </table>
-
+    <div v-else class="no-users">Không tìm thấy người dùng phù hợp</div>
     <!-- Pagination -->
-    <a-pagination
-      :current="currentPage"
-      :total="totalUsers"
-      :pageSize="limit"
-      @change="handlePaginationChange"
-      class="pagination"
-    />
-
-    <!-- Nút quay lại tổ chức -->
-    <!-- <div>
-      <button class="blueButton" @click="backToOrganizations">
-        Back to Organizations
-      </button>
-    </div> -->
-
+    <div class="pagination">
+      <a-pagination
+        :current="currentPage[activeTab]"
+        :total="totalPages[activeTab] * limit"
+        :page-size="limit"
+        @change="handlePageChange"
+        :hide-on-single-page="true"
+      />
+    </div>
     <!-- Loading spinner -->
     <div v-if="loading" class="loading-spinner"></div>
 
     <!-- Chi tiết người dùng -->
     <div v-if="selectedUser" class="userDetail" ref="userDetail">
+      <button class="closeButton" @click="closeUserDetail">
+        <i class="fas fa-times-circle"></i>
+      </button>
       <h2>Thông tin chi tiết người dùng</h2>
       <div class="userDetailInfo">
         <p><strong>Tên Tài Khoản: </strong> {{ selectedUser.USERNAME }}</p>
@@ -112,15 +136,16 @@
           <strong>Trạng Thái Tài Khoản: </strong>
           <span
             :style="{
-              color: selectedUser.IS_BLOCKED.CHECK
-                ? 'red'
-                : selectedUser.IS_ACTIVATED
-                ? 'green'
-                : 'orange',
+              color:
+                selectedUser.IS_BLOCKED && selectedUser.IS_BLOCKED.CHECK
+                  ? 'red'
+                  : selectedUser.IS_ACTIVATED
+                  ? 'green'
+                  : 'orange',
             }"
           >
             {{
-              selectedUser.IS_BLOCKED.CHECK
+              selectedUser.IS_BLOCKED && selectedUser.IS_BLOCKED.CHECK
                 ? "Đã Bị Khóa"
                 : !selectedUser.IS_ACTIVATED
                 ? "Chưa Xác Thực"
@@ -131,18 +156,18 @@
       </div>
       <div class="userDetailActions">
         <button
-          v-if="!selectedUser.IS_BLOCKED.CHECK"
+          v-if="!selectedUser.IS_BLOCKED || !selectedUser.IS_BLOCKED.CHECK"
           class="redButton"
           @click="confirmToggleBlock(selectedUser)"
         >
-          Block User
+          Block
         </button>
         <button
           v-else
           class="blueButton"
           @click="confirmToggleBlock(selectedUser)"
         >
-          Unlock User
+          Unlock
         </button>
       </div>
     </div>
@@ -150,28 +175,36 @@
 </template>
 
 <script>
-import { Pagination as APagination, Modal } from "ant-design-vue";
+import { Input, Modal, Pagination } from "ant-design-vue";
 import _ from "lodash";
 import axiosClient from "../../api/axiosClient";
 
 export default {
   name: "UsersList",
   components: {
-    APagination,
+    Pagination,
+    "a-input-search": Input.Search,
   },
   props: ["id"],
   data() {
     return {
-      userSearchInput: "",
-      users: [],
-      currentPage: 1,
-      totalUsers: 0,
+      search: "",
+      allUsers: [],
+      activeUsers: [],
+      inactiveUsers: [],
+      blockedUsers: [],
       limit: 10,
       selectedUser: null,
       loading: false,
-      debouncedSearchUsers: _.debounce(this.searchUsers, 300),
+      debouncedSearch: _.debounce(this.searchUsers, 800),
       activeTab: "all",
-      tabPages: {
+      currentPage: {
+        all: 1,
+        active: 1,
+        inactive: 1,
+        blocked: 1,
+      },
+      totalPages: {
         all: 1,
         active: 1,
         inactive: 1,
@@ -181,24 +214,35 @@ export default {
   },
   computed: {
     placeholderText() {
-      return this.userSearchInput.trim() === ""
+      return this.search.trim() === ""
         ? "Vui lòng nhập tên hoặc tên tài khoản người dùng"
         : "";
     },
-    filteredUsers() {
-      const startIndex = (this.currentPage - 1) * this.limit;
-      return this.users.slice(startIndex, startIndex + this.limit);
+    currentUsers() {
+      switch (this.activeTab) {
+        case "all":
+          return this.allUsers;
+        case "active":
+          return this.activeUsers;
+        case "inactive":
+          return this.inactiveUsers;
+        case "blocked":
+          return this.blockedUsers;
+      }
     },
   },
   watch: {
-    currentPage() {
-      this.fetchUsersByOrganizationId();
+    currentPage: {
+      deep: true,
+      handler() {
+        this.fetchUsersByOrganizationId();
+      },
     },
     activeTab() {
       this.fetchUsersByOrganizationId();
     },
-    userSearchInput: _.debounce(function () {
-      this.currentPage = 1;
+    search: _.debounce(function () {
+      this.currentPage[this.activeTab] = 1;
       this.fetchUsersByOrganizationId();
     }, 300),
   },
@@ -216,9 +260,9 @@ export default {
               ORGANIZATION_ID: this.id,
             },
             params: {
-              page: this.currentPage,
+              page: this.currentPage[this.activeTab],
               limit: this.limit,
-              search: this.userSearchInput,
+              search: this.search,
               status: this.activeTab,
             },
           }
@@ -226,8 +270,32 @@ export default {
 
         if (response.status === 200) {
           const result = response.data;
-          this.users = result.data;
-          this.totalUsers = result.totalUsers;
+          const users = result.data;
+          const totalItems = result.totalUsers;
+          const page = this.currentPage[this.activeTab];
+
+          switch (this.activeTab) {
+            case "all":
+              this.allUsers = users;
+              this.totalPages.all = Math.ceil(totalItems / this.limit);
+              this.currentPage.all = page;
+              break;
+            case "active":
+              this.activeUsers = users;
+              this.totalPages.active = Math.ceil(totalItems / this.limit);
+              this.currentPage.active = page;
+              break;
+            case "inactive":
+              this.inactiveUsers = users;
+              this.totalPages.inactive = Math.ceil(totalItems / this.limit);
+              this.currentPage.inactive = page;
+              break;
+            case "blocked":
+              this.blockedUsers = users;
+              this.totalPages.blocked = Math.ceil(totalItems / this.limit);
+              this.currentPage.blocked = page;
+              break;
+          }
         } else {
           console.error("Error fetching users:", response.statusText);
         }
@@ -240,7 +308,10 @@ export default {
 
     async showUserDetail(user) {
       this.loading = true;
-      this.selectedUser = user;
+      this.selectedUser = { ...user };
+      this.selectedUser.IS_BLOCKED = this.selectedUser.IS_BLOCKED || {
+        CHECK: false,
+      };
       await new Promise((resolve) => setTimeout(resolve, 500));
       this.$nextTick(() => {
         const element = this.$refs.userDetail;
@@ -271,8 +342,9 @@ export default {
         );
 
         if (response.status === 200) {
-          this.selectedUser.IS_BLOCKED.CHECK =
-            !this.selectedUser.IS_BLOCKED.CHECK;
+          user.IS_BLOCKED = user.IS_BLOCKED || {};
+          user.IS_BLOCKED.CHECK = !user.IS_BLOCKED.CHECK;
+          selectedUser.IS_BLOCKED.CHECK = !selectedUser.IS_BLOCKED.CHECK;
           this.fetchUsersByOrganizationId();
         } else {
           console.error(
@@ -287,8 +359,8 @@ export default {
     backToOrganizations() {
       this.$router.push({ name: "OrganizationsList" });
     },
-    handlePaginationChange(page) {
-      this.currentPage = page;
+    handlePageChange(page) {
+      this.currentPage[this.activeTab] = page;
     },
     async handleAction(action) {
       this.loading = true;
@@ -297,17 +369,20 @@ export default {
       this.loading = false;
     },
     async searchUsers() {
-      this.currentPage = 1;
+      this.currentPage[this.activeTab] = 1;
       await this.fetchUsersByOrganizationId();
     },
     changeTab(tab) {
       this.activeTab = tab;
-      this.currentPage = this.tabPages[this.activeTab];
+      this.currentPage[this.activeTab] = this.currentPage[this.activeTab] || 1;
+      this.fetchUsersByOrganizationId();
+    },
+    closeUserDetail() {
+      this.selectedUser = null;
     },
   },
 };
 </script>
-
 <style scoped>
 .containPage {
   max-width: 1200px;
@@ -317,124 +392,73 @@ export default {
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
-
 .userSearch {
+  margin-bottom: 20px;
+  position: relative;
   display: flex;
   align-items: center;
-  margin-bottom: 20px;
 }
-
-.userSearch label {
-  margin-right: 10px;
-  font-size: 14px;
-}
-
-.userSearch input[type="text"],
-.userSearch button {
-  padding: 8px;
-  font-size: 14px;
-  height: 30px;
+.userSearch .searchInput {
+  flex: 1;
+  padding: 10px 15px;
+  font-size: 16px;
+  border: 1px solid #ccc;
   border-radius: 4px;
-}
-
-.userSearch input[type="text"] {
-  flex-grow: 1;
-  border: 1px solid #d9d9d9;
-  outline: none;
+  box-sizing: border-box;
   transition: border-color 0.3s ease;
 }
-
-.userSearch input[type="text"]:focus {
-  border-color: #1890ff;
+.userSearch .searchInput:focus {
+  outline: none;
+  border-color: #4caf50;
 }
-
-.userSearch button {
-  min-width: 80px;
-  margin-left: 10px;
-  background-color: #1890ff;
+.userSearch .searchButton {
+  padding: 10px 20px;
+  border: 1px solid #4caf50;
+  background-color: #4caf50;
   color: white;
-  border: none;
+  border-radius: 0 4px 4px 0;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s, border-color 0.3s;
 }
-
-.userSearch button:hover {
-  background-color: #40a9ff;
+.userSearch .searchButton:hover {
+  background-color: #45a049;
+  border-color: #45a049;
 }
-
-.userSearch button:active {
-  transform: translateY(1px);
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
 }
-
-.userSearch button.blueButton {
-  background-color: #1890ff;
-}
-
-.userSearch button.blueButton:hover {
-  background-color: #40a9ff;
-}
-
-.userSearch button.redButton {
-  background-color: #f5222d;
-}
-
-.userSearch button.redButton:hover {
-  background-color: #ff4d4f;
-}
-
-.userSearch button:disabled {
-  background-color: #d9d9d9;
-  cursor: not-allowed;
-}
-
-.userSearch input[type="text"]::placeholder,
-.userSearch input[type="text"]:-ms-input-placeholder,
-.userSearch input[type="text"]::-ms-input-placeholder {
-  color: #ccc;
-}
-
 .userDetail {
+  position: relative;
   margin-top: 20px;
   padding: 20px;
   background-color: #fff;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
-
 .userDetail h2 {
   margin-bottom: 20px;
 }
-
 .userDetailInfo {
   background-color: #f0f0f0;
   padding: 20px;
   border-radius: 5px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
-
 .userDetailInfo p {
   margin: 8px 0;
 }
-
 .userDetailInfo strong {
   font-weight: bold;
   margin-right: 5px;
 }
-
 .userDetailInfo p:last-child {
   margin-bottom: 0;
 }
-
 .userDetailActions {
   margin-top: 20px;
 }
-
-.pagination {
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
-}
-
 .navigation {
   display: flex;
   justify-content: flex-start;
@@ -442,24 +466,20 @@ export default {
   list-style-type: none;
   padding: 0;
 }
-
 .navigation li {
   padding: 10px 20px;
   cursor: pointer;
   border-radius: 2px;
   margin-right: 5px;
 }
-
 .navigation li.activeTab {
   background-color: #4caf50;
   color: #fff;
 }
-
 .navigation li:not(.activeTab) {
   background-color: #79d17c;
   color: #fff;
 }
-
 .redButton,
 .blueButton {
   background-color: #1890ff;
@@ -470,43 +490,41 @@ export default {
   cursor: pointer;
   border-radius: 4px;
 }
-
 .redButton:hover,
 .blueButton:hover {
   background-color: #40a9ff;
 }
-
 .redButton {
   background-color: #f5222d;
 }
-
 .redButton:hover {
   background-color: #ff4d4f;
 }
-
 .custom-table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 20px;
 }
-
 .custom-table th,
 .custom-table td {
   border: 1px solid #ddd;
   padding: 8px;
   text-align: left;
 }
-
 .custom-table th {
   background-color: #f2f2f2;
+  text-align: center;
 }
-
+.custom-table td.details-column {
+  text-align: center;
+  vertical-align: middle;
+}
 .fixedColumn {
-  width: 25%;
-  min-width: 150px;
-  max-width: 300px;
+  width: 15%;
 }
-
+.fixedColumn.sttColumn {
+  width: 5%;
+}
 .loading-spinner {
   position: fixed;
   top: 50%;
@@ -564,5 +582,68 @@ h2 {
     font-size: 12px;
     padding: 3px 8px;
   }
+}
+
+.iconButton {
+  background: none;
+  border: none;
+  color: #4caf50;
+  font-size: 30px;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+}
+.iconButton i {
+  margin-right: 5px;
+}
+.iconButton:hover {
+  color: #79d17c;
+}
+.smallButton {
+  margin-top: 5px;
+  padding: 5px 10px;
+  font-size: 15px;
+  cursor: pointer;
+}
+.status-column {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.status-text {
+  min-width: 100px;
+  text-align: left;
+}
+
+.status-column .smallButton {
+  flex-shrink: 0;
+  width: 80px;
+}
+.closeButton {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #ff0000;
+  cursor: pointer;
+}
+
+.closeButton i {
+  font-size: 24px;
+}
+
+.closeButton:hover {
+  color: #ef4949;
+}
+.no-users {
+  text-align: center;
+  color: #555;
+  font-size: 18px;
+  margin-top: 20px;
 }
 </style>

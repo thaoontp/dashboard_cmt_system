@@ -17,6 +17,7 @@ import LoginAdmin from "../views/LoginAdmin/LoginAdmin.vue"
 
 // Page Organization
 import PageOrganLayout from "@/layouts/PageOrganLayout/PageOrganLayout.vue"
+import store from "@/store"
 import HistoryPage from "@/views/PageOrgan/History/History.vue"
 import HomePageOrgan from "@/views/PageOrgan/HomePage/HomePage.vue"
 import MenuPage from "@/views/PageOrgan/Menu/Menu.vue"
@@ -25,6 +26,7 @@ import Profile from "@/views/PageOrgan/Profile/Profile.vue"
 import Instructions from "@/views/PageOrgan/Instructions/Instructions.vue"
 
 import store from "@/store"
+
 import OrganizationsList from '../components/Organization/OrganizationsList.vue'
 import UsersList from '../components/Organization/UsersList.vue'
 import registerUser from '../components/pageOrganization/registerUser.vue'
@@ -171,7 +173,6 @@ const routes = [
 			layout: AuthLayout,
 		}
 	},
-
 ]
 const router = createRouter({
 	history: createWebHistory(),
