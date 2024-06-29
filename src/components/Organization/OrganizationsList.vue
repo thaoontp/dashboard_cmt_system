@@ -40,9 +40,10 @@
       <input
         type="text"
         v-model="searchKeyword"
-        @input="handleSearch"
+        @input="debouncedHandleSearch"
         placeholder="Nhập từ khóa tìm kiếm..."
       />
+      <button class="searchButton" @click="handleSearch">Tìm kiếm</button>
     </div>
     <!-- Organization Lists -->
     <div v-if="isLogin">
@@ -57,7 +58,10 @@
             rowKey="_id"
             :pagination="false"
           >
-            <template #bodyCell="{ column, record }">
+            <template #bodyCell="{ column, record, index }">
+              <template v-if="column.key === 'index'">
+                {{ (currentPage[currentTab] - 1) * perPage + index + 1 }}
+              </template>
               <template v-if="column.dataIndex === '_id'">
                 {{ record._id }}
               </template>
@@ -82,7 +86,10 @@
               </template>
               <template v-else-if="column.key === 'approveAction'">
                 <template v-if="!record.OBJECT_APPROVED.CHECK">
-                  <button class="redButton" @click="confirmApprove(record._id)">
+                  <button
+                    class="smallButton redButton"
+                    @click="confirmApprove(record._id)"
+                  >
                     Phê Duyệt
                   </button>
                 </template>
@@ -90,9 +97,19 @@
                   <span class="approvedText"> Đã Phê Duyệt</span>
                 </template>
               </template>
-
-              <template v-else>
-                <button class="blueButton" @click="viewDetail(record)">
+              <template v-else-if="column.key === 'viewUsersAction'">
+                <button
+                  class="smallButton blueButton"
+                  @click="viewUsers(record)"
+                >
+                  Danh Sách Người Dùng
+                </button>
+              </template>
+              <template v-else-if="column.key === 'viewDetailAction'">
+                <button
+                  class="smallButton blueButton"
+                  @click="viewDetail(record)"
+                >
                   Xem Chi Tiết
                 </button>
               </template>
@@ -114,7 +131,7 @@
           v-show="currentTab !== '' && filteredOrganizations.length === 0"
           class="organizationList"
         >
-          <p>Không tìm thấy tổ chức phù hợp.</p>
+          <p class="no-users">Không tìm thấy tổ chức phù hợp.</p>
         </div>
       </a-spin>
     </div>
@@ -125,42 +142,45 @@
       v-if="selectedOrganization"
       class="organizationDetail"
     >
-      <div>
+      <div class="detailHeader">
         <h2>Thông tin chi tiết tổ chức</h2>
-        <div class="organizationDetail2">
-          <p>
-            <strong>Tên tổ chức:</strong>
-            {{ selectedOrganization.ORGANIZATION_NAME }}
-          </p>
-          <p>
-            <strong>Email tổ chức:</strong>
-            {{ selectedOrganization.ORGANIZATION_EMAIL }}
-          </p>
-          <p>
-            <strong>Điện thoại tổ chức:</strong>
-            {{ selectedOrganization.ORGANIZATION_PHONE }}
-          </p>
-          <p>
-            <strong>Trạng thái hoạt động:</strong>
-            {{
-              selectedOrganization.ORGANIZATION_ACTIVE.CHECK
-                ? "Đang Hoạt Động"
-                : "Ngừng Hoạt Động"
-            }}
-          </p>
-          <p>
-            <strong>Xét duyệt tổ chức:</strong>
-            {{
-              selectedOrganization.OBJECT_APPROVED.CHECK
-                ? "Đã Được Duyệt"
-                : "Chưa Được Duyệt"
-            }}
-          </p>
-          <p>
-            <strong>Ngày đăng ký:</strong>
-            {{ formattedRegisterDate(selectedOrganization.REGISTER_DATE) }}
-          </p>
-        </div>
+        <button class="closeButton" @click="closeOrganizationDetail">
+          <i class="fas fa-times-circle"></i>
+        </button>
+      </div>
+      <div class="organizationDetail2">
+        <p>
+          <strong>Tên tổ chức:</strong>
+          {{ selectedOrganization.ORGANIZATION_NAME }}
+        </p>
+        <p>
+          <strong>Email tổ chức:</strong>
+          {{ selectedOrganization.ORGANIZATION_EMAIL }}
+        </p>
+        <p>
+          <strong>Điện thoại tổ chức:</strong>
+          {{ selectedOrganization.ORGANIZATION_PHONE }}
+        </p>
+        <p>
+          <strong>Trạng thái hoạt động:</strong>
+          {{
+            selectedOrganization.ORGANIZATION_ACTIVE.CHECK
+              ? "Đang Hoạt Động"
+              : "Ngừng Hoạt Động"
+          }}
+        </p>
+        <p>
+          <strong>Xét duyệt tổ chức:</strong>
+          {{
+            selectedOrganization.OBJECT_APPROVED.CHECK
+              ? "Đã Được Duyệt"
+              : "Chưa Được Duyệt"
+          }}
+        </p>
+        <p>
+          <strong>Ngày đăng ký:</strong>
+          {{ formattedRegisterDate(selectedOrganization.REGISTER_DATE) }}
+        </p>
       </div>
       <button class="blueButton" @click="viewUsers(selectedOrganization)">
         Xem Danh Sách Người Dùng
@@ -171,6 +191,7 @@
 
 <script>
 import { Pagination, Spin, Table } from "ant-design-vue";
+import _ from "lodash";
 import moment from "moment";
 import Swal from "sweetalert2";
 import axiosClient from "../../api/axiosClient";
@@ -186,7 +207,14 @@ export default {
     return {
       isLogin: true,
       isLoading: false,
+      debouncedHandleSearch: _.debounce(this.handleSearch, 900),
       columns: [
+        {
+          title: "STT",
+          key: "index",
+          scopedSlots: { customRender: "index" },
+          width: 50,
+        },
         {
           title: "Tên tổ chức",
           dataIndex: "ORGANIZATION_NAME",
@@ -197,7 +225,13 @@ export default {
           title: "Số lượng Người Dùng",
           dataIndex: "USER_COUNT",
           key: "USER_COUNT",
-          width: 120,
+          width: 150,
+        },
+        {
+          title: "Xem Danh Sách Người Dùng",
+          key: "viewUsersAction",
+          scopedSlots: { customRender: "action" },
+          width: 200,
         },
         {
           title: "Trạng Thái",
@@ -213,7 +247,7 @@ export default {
         },
         {
           title: "Chi Tiết Tổ Chức",
-          key: "action",
+          key: "viewDetailAction",
           scopedSlots: { customRender: "action" },
           width: 150,
         },
@@ -232,7 +266,7 @@ export default {
         active: 1,
         unactive: 1,
       },
-      perPage: 5,
+      perPage: 10,
       activeTab: "all",
       searchKeyword: "",
       selectedOrganization: null,
@@ -417,6 +451,9 @@ export default {
       this.currentPage[this.currentTab] = 1;
       this.fetchOrganizations(this.currentTab);
     },
+    closeOrganizationDetail() {
+      this.selectedOrganization = null;
+    },
   },
   computed: {
     currentTab() {
@@ -433,6 +470,13 @@ export default {
       return organizations.filter((org) =>
         org.ORGANIZATION_NAME.toLowerCase().includes(keyword)
       );
+    },
+  },
+  watch: {
+    searchKeyword: {
+      handler: function (val) {
+        this.debouncedHandleSearch();
+      },
     },
   },
 };
@@ -616,10 +660,12 @@ h2 {
 .search-bar {
   margin-bottom: 20px;
   position: relative;
+  display: flex;
+  align-items: center;
 }
 
 .search-bar input[type="text"] {
-  width: 100%;
+  flex: 1;
   padding: 10px 15px;
   font-size: 16px;
   border: 1px solid #ccc;
@@ -637,17 +683,50 @@ h2 {
   color: #999;
 }
 
-.search-bar .search-icon {
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
+.searchButton {
+  padding: 10px 20px;
+  border: 1px solid #4caf50;
+  background-color: #4caf50;
+  color: white;
+  border-radius: 0 4px 4px 0;
   cursor: pointer;
+  transition: background-color 0.3s, border-color 0.3s;
 }
 
-.search-bar .search-icon svg {
-  width: 20px;
-  height: 20px;
-  fill: #888;
+.searchButton:hover {
+  background-color: #45a049;
+}
+
+.detailHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #e70909;
+  transition: color 0.3s ease;
+}
+
+.closeButton:hover {
+  color: #ec4141;
+}
+
+.smallButton {
+  margin-top: 5px;
+  padding: 5px 10px;
+  font-size: 15px;
+  cursor: pointer;
+}
+.no-users {
+  text-align: center;
+  color: #555;
+  font-size: 18px;
+  margin-top: 20px;
 }
 </style>
