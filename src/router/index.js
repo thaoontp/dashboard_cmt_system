@@ -20,8 +20,9 @@ import PageOrganLayout from "@/layouts/PageOrganLayout/PageOrganLayout.vue"
 import HistoryPage from "@/views/PageOrgan/History/History.vue"
 import HomePageOrgan from "@/views/PageOrgan/HomePage/HomePage.vue"
 import MenuPage from "@/views/PageOrgan/Menu/Menu.vue"
-import HistoryPage from "@/views/PageOrgan/History/History.vue"
 import Invoice from "@/views/PageOrgan/Invoice/Invoice.vue"
+import Profile from "@/views/PageOrgan/Profile/Profile.vue"
+import Instructions from "@/views/PageOrgan/Instructions/Instructions.vue"
 
 import store from "@/store"
 import OrganizationsList from '../components/Organization/OrganizationsList.vue'
@@ -145,6 +146,20 @@ const routes = [
 	{
 		path: "/pages/history",
 		component: HistoryPage,
+		meta: {
+			layout: PageOrganLayout,
+		}
+	},
+	{
+		path: "/pages/profile",
+		component: Profile,
+		meta: {
+			layout: PageOrganLayout,
+		}
+	},
+	{
+		path: "/pages/instructions",
+		component: Instructions,
 		meta: {
 			layout: PageOrganLayout,
 		}

@@ -6,6 +6,7 @@ const store = createStore({
   state: {
     isLoggedIn: false,
     userInfo: null,
+    editingMode: false,
     packages: [],
     users: [],
   },
@@ -35,9 +36,18 @@ const store = createStore({
     blockUser(state, userId) {
       const user = state.users.find(user => user.id === userId);
       if (user) {
-        user.isBlocked = true; 
+        user.IS_BLOCKED  = true; 
       }
     },
+    UnblockUser(state, userId) {
+      const user = state.users.find(user => user.id === userId);
+      if (user) {
+        user.IS_BLOCKED  = false; 
+      }
+    },
+    SET_EDITING_MODE(state, mode) {
+      state.editingMode = mode;
+    }
   },
   actions: {
 
@@ -105,6 +115,24 @@ const store = createStore({
         message.error('Error blocking user');
       }
     },
+    async UnblockUser({ commit }, userId) {
+      try {
+        const response = await axios.post(`/user/blockUser`, {
+          userId: userId,
+          IS_BLOCKED: false,
+        });
+        if (response.status === 200) {
+          commit('UnblockUser', userId);
+          message.success('User has been unblocked successfully');
+        } else {
+          throw new Error('Failed to unblock user: ' + response.statusText);
+        }
+      } catch (error) {
+        console.error('Error unblocking user:', error);
+        message.error('Error unblocking user');
+        throw error;
+      }
+    },
 
     async login({ commit, dispatch }, credentials) {
       try {
@@ -115,21 +143,26 @@ const store = createStore({
         if (response.status >= 200 && response.status <= 300) {
           const user = response.data.message;
           const token = response.data.metadata;
+          localStorage.setItem("token", token);
+          commit('SET_LOGIN_STATE', user);
+    
+          await dispatch('getUserInfo');
+    
           if (user.ROLE.IS_ADMIN) {
-            localStorage.setItem("token", token);
-            commit('SET_LOGIN_STATE', user);
-            dispatch('getUserInfo');
-            return true;
+            return 'admin';
+          } else if (user.ROLE.IS_ORGANIZATION) {
+            return 'organ';
           } else {
             alert("Bạn không có quyền truy cập với tài khoản này.");
-            return false;
+            return 'unauthorized';
           }
         }
       } catch (error) {
         alert("Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin đăng nhập." + error.toString());
-        return false;
+        return 'error';
       }
-    },
+    },   
+    
     async getUserInfo({ commit }) {
       try {
         console.log("Starting getUserInfo action");
@@ -145,6 +178,22 @@ const store = createStore({
         }
       } catch (error) {
         console.error("Error while getting user info:", error);
+      }
+    },
+    async updateUserInfo({ commit, state }, updatedInfo) {
+      try {
+        // Perform update request, for example:
+        const response = await axios.put('/user/updateUser', updatedInfo);
+        if (response.status >= 200 && response.status < 300) {
+          // Optionally update local state if needed
+          commit('SET_USER_INFO', updatedInfo);
+          commit('SET_EDITING_MODE', false); // Turn off editing mode after successful update
+        } else {
+          console.error('Unexpected response status:', response.status);
+        }
+      } catch (error) {
+        console.error('Error while updating user info:', error);
+        throw error; // Re-throw the error for handling in components
       }
     },
     logout({ commit }) {
@@ -178,6 +227,7 @@ const store = createStore({
     isLoggedIn: (state) => state.isLoggedIn,
     userInfo: (state) => state.userInfo,
     packages: (state) => state.packages,
+    editingMode: state => state.editingMode
   }
 });
 

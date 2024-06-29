@@ -120,3 +120,19 @@
   text-align: center;
   color: #999;
 }
+
+
+:deep(.unblock-button) {
+  background-color: green !important; // Màu nền
+  color: white !important; // Màu chữ
+  border: none !important; // Bỏ viền
+  border-radius: 4px !important; // Bo góc
+  padding: 6px 12px !important; // Khoảng cách trong
+  font-size: 14px !important; // Kích thước chữ
+  cursor: pointer !important; // Con trỏ chuột
+  transition: background-color 0.3s !important; // Hiệu ứng chuyển màu
+
+  &:hover {
+    background-color: darkgreen !important; // Màu khi hover
+  }
+}
