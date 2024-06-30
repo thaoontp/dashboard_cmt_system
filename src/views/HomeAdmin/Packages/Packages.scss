@@ -28,6 +28,10 @@
       opacity: 0.8;
     }
 }
+.vnđ {
+  font-size: 0.8em; /* Kích thước nhỏ hơn cho chữ VNĐ */
+  vertical-align: super; /* Hiển thị chữ VNĐ lên trên */
+}
   
 .package-list {
     display: flex;

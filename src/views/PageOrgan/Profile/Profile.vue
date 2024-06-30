@@ -73,7 +73,7 @@ export default {
     },
     async updateUserInfo(updatedData) {
       try {
-        const response = await axiosClient.put('/api/user/update', updatedData);
+        const response = await axiosClient.put('/user/updateUser', updatedData);
         console.log('Cập nhật thông tin thành công:', response.data);
         // Cập nhật lại thông tin trong Vuex store nếu cần thiết
         // this.getUserInfo(); // Cập nhật lại thông tin người dùng từ server
