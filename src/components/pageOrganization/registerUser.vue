@@ -324,7 +324,7 @@ h2 {
   margin-bottom: 20px;
   text-transform: uppercase;
   letter-spacing: 1px;
-  border-bottom: 2px solid #4caf50;
+  border-bottom: 2px solid #2e3a59;
   padding-bottom: 10px;
 }
 

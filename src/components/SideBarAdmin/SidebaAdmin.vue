@@ -1,74 +1,111 @@
 <template>
   <aside :class="['sidebar', { 'is-expanded': is_expanded }]">
-    <!-- <div class="logo">
-      <img :src="logoURL" alt="Vue" />
-      <span class="titleWeb text-info"
-        >COMMENTS<span class="text-warning">NE</span></span
-      >
-    </div> -->
-
-    <a-menu
-      class="menu"
-      :theme="theme"
-      :defaultOpenKeys="['sub1']"
-      :selectedKeys="[current]"
-      mode="inline"
-      @click="onClick"
-    >
-      <a-sub-menu key="sub1" title="Home">
-        <template #icon>
-          <MailOutlined />
-        </template>
-        <a-menu-item key="1" class="menu-item">
-          <router-link to="/" style="text-decoration: none; color: inherit"
-            >Home Page</router-link
-          >
-        </a-menu-item>
-        <a-menu-item key="2" class="menu-item">
-          <router-link to="/user" style="text-decoration: none; color: inherit"
-            >User</router-link
-          >
-        </a-menu-item>
-        <a-menu-item key="3" class="menu-item">
-          <router-link
-            to="/package"
-            style="text-decoration: none; color: inherit"
-            >Package</router-link
-          >
-        </a-menu-item>
-        <!-- <a-menu-item key="4">Option 4</a-menu-item> -->
-      </a-sub-menu>
-      <a-sub-menu key="sub2" title="Organization">
-        <template #icon>
-          <AppstoreOutlined />
-        </template>
-        <a-menu-item key="5">
-          <router-link to="/organization/register"
-            >Register Organization</router-link
-          >
-        </a-menu-item>
-        <a-menu-item key="6">
-          <router-link to="/organization/getOrganization"
-            >Organization List</router-link
-          >
-        </a-menu-item>
-        <!-- <a-menu-item key="7">
-				<router-link to="/organization/getUserByOrganization">Get User For Organization</router-link>
-			</a-menu-item> -->
-        <!-- <a-menu-item key="8">
-				<router-link to="/organization/loginToOrganization">Login To Organization</router-link>
-			</a-menu-item> -->
-      </a-sub-menu>
-      <a-sub-menu key="sub4" title="Setting">
-        <template #icon>
-          <SettingOutlined />
-        </template>
-        <a-menu-item key="9">Option 9</a-menu-item>
-        <a-menu-item key="10">Option 10</a-menu-item>
-        <a-menu-item key="11">Option 11</a-menu-item>
-        <a-menu-item key="12">Option 12</a-menu-item>
-      </a-sub-menu>
-    </a-menu>
+    <ul class="menu text">
+      <li :class="['menu-item', { selected: openKeys.includes('sub1') }]">
+        <div @click="toggleSubmenu('sub1')">
+          <span class="material-icons"><i class="fa-solid fa-home"></i></span>
+          Home
+        </div>
+        <transition name="slide">
+          <ul v-if="openKeys.includes('sub1')">
+            <li class="submenu-item">
+              <button
+                class="submenu-link"
+                :class="{ selected: current === 'home-page' }"
+                @click="
+                  handleSubmenuItemClick('home-page');
+                  navigateTo('/');
+                "
+              >
+                Home Page
+              </button>
+            </li>
+            <li class="submenu-item">
+              <button
+                class="submenu-link"
+                :class="{ selected: current === 'user' }"
+                @click="
+                  handleSubmenuItemClick('user');
+                  navigateTo('/user');
+                "
+              >
+                User
+              </button>
+            </li>
+            <li class="submenu-item">
+              <button
+                class="submenu-link"
+                :class="{ selected: current === 'package' }"
+                @click="
+                  handleSubmenuItemClick('package');
+                  navigateTo('/package');
+                "
+              >
+                Package
+              </button>
+            </li>
+          </ul>
+        </transition>
+      </li>
+      <li :class="['menu-item', { selected: openKeys.includes('sub2') }]">
+        <div @click="toggleSubmenu('sub2')">
+          <span class="material-icons"
+            ><i class="fa-solid fa-building"></i
+          ></span>
+          Organization
+        </div>
+        <transition name="slide">
+          <ul v-if="openKeys.includes('sub2')">
+            <li class="submenu-item">
+              <button
+                class="submenu-link"
+                :class="{ selected: current === 'register-organization' }"
+                @click="
+                  handleSubmenuItemClick('register-organization');
+                  navigateTo('/organization/register');
+                "
+              >
+                Register Organization
+              </button>
+            </li>
+            <li class="submenu-item">
+              <button
+                class="submenu-link"
+                :class="{ selected: current === 'organization-list' }"
+                @click="
+                  handleSubmenuItemClick('organization-list');
+                  navigateTo('/organization/getOrganization');
+                "
+              >
+                Organization List
+              </button>
+            </li>
+          </ul>
+        </transition>
+      </li>
+      <li :class="['menu-item', { selected: openKeys.includes('sub4') }]">
+        <div @click="toggleSubmenu('sub4')">
+          <span class="material-icons"><i class="fa-solid fa-cog"></i></span>
+          Setting
+        </div>
+        <transition name="slide">
+          <ul v-if="openKeys.includes('sub4')">
+            <li class="submenu-item">
+              <button class="submenu-link">Option 9</button>
+            </li>
+            <li class="submenu-item">
+              <button class="submenu-link">Option 10</button>
+            </li>
+            <li class="submenu-item">
+              <button class="submenu-link">Option 11</button>
+            </li>
+            <li class="submenu-item">
+              <button class="submenu-link">Option 12</button>
+            </li>
+          </ul>
+        </transition>
+      </li>
+    </ul>
 
     <div class="menu">
       <router-link to="/pages/organizations" class="button">
@@ -79,53 +116,54 @@
       </router-link>
     </div>
 
-    <div class="menu">
-      <router-link to="/login" class="button">
-        <span class="material-icons">
-          <i class="fa-solid fa-right-to-bracket"></i>
-        </span>
-        <span class="text">Login</span>
-      </router-link>
-    </div>
-
-    <div class="menu" @click="showModal">
-      <div class="button">
-        <span class="material-icons"
-          ><i class="fa-solid fa-right-from-bracket"></i
-        ></span>
-        <span class="text">Logout</span>
+    <div class="bottom-menu">
+      <div class="menu" v-if="!isLoggedIn">
+        <router-link to="/login" class="button">
+          <span class="material-icons">
+            <i class="fa-solid fa-right-to-bracket"></i>
+          </span>
+          <span class="text">Login</span>
+        </router-link>
       </div>
-      <a-modal
-        title="Đăng xuất"
-        :open="isModal"
-        @ok="logout"
-        @cancel="handleCancel"
-        :ok-button-props="okButtonProps"
-        okText="Đăng xuất"
-        cancelText="Hủy"
-      >
-        <p>Bạn có chắc muốn đăng xuất khỏi hệ thống?</p>
-      </a-modal>
+
+      <div v-else class="menu" @click="showModal">
+        <div class="button">
+          <span class="material-icons">
+            <i class="fa-solid fa-right-from-bracket"></i>
+          </span>
+          <span class="text">Logout</span>
+        </div>
+        <div v-if="isModal" class="modal-overlay">
+          <a-modal
+            title="Đăng xuất"
+            :open="isModal"
+            @ok="logout"
+            @cancel="handleCancel"
+            :ok-button-props="okButtonProps"
+            okText="Đăng xuất"
+            cancelText="Hủy"
+          >
+            <p>Bạn có chắc muốn đăng xuất khỏi hệ thống?</p>
+          </a-modal>
+        </div>
+      </div>
     </div>
   </aside>
 </template>
 
 <script setup>
-import {
-  AppstoreOutlined,
-  MailOutlined,
-  SettingOutlined,
-} from "@ant-design/icons-vue";
-import { ref, onMounted, onBeforeUnmount } from "vue";
+import { onBeforeUnmount, onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
-import logoURL from "../../assets/AuthHeader.png";
 
-const theme = ref("light");
-const current = ref("1");
+const current = ref(null);
 
 const router = useRouter();
 
 const is_expanded = ref(localStorage.getItem("is_expanded") === "true");
+
+const isLoggedIn = ref(!!localStorage.getItem("token"));
+
+const openKeys = ref(["sub1"]);
 
 const handleResize = () => {
   if (window.innerWidth < 768) {
@@ -136,12 +174,12 @@ const handleResize = () => {
 };
 
 onMounted(() => {
-  window.addEventListener('resize', handleResize);
+  window.addEventListener("resize", handleResize);
   handleResize();
 });
 
 onBeforeUnmount(() => {
-  window.removeEventListener('resize', handleResize);
+  window.removeEventListener("resize", handleResize);
 });
 
 const ToggleMenu = () => {
@@ -152,31 +190,42 @@ const ToggleMenu = () => {
 const isModal = ref(false);
 const okButtonProps = {
   style: {
-    background: "red", // Đặt màu đỏ cho nút "OK"
+    background: "red",
   },
 };
+
 const showModal = () => {
   isModal.value = true;
 };
 
 const logout = () => {
   localStorage.removeItem("token");
+  isLoggedIn.value = false;
   router.push("/login");
 };
+
 const handleCancel = () => {
   isModal.value = false;
 };
 
-const changeTheme = (value) => {
-  theme.value = value ? "dark" : "light";
+const toggleSubmenu = (key) => {
+  if (openKeys.value.includes(key)) {
+    openKeys.value = openKeys.value.filter((k) => k !== key);
+  } else {
+    openKeys.value.push(key);
+  }
 };
 
-const onClick = (e) => {
-  console.log("click ", e);
-  current.value = e.key;
+const handleSubmenuItemClick = (value) => {
+  current.value = value;
+  console.log("current value:", current.value);
+};
+
+const navigateTo = (path) => {
+  router.push(path);
 };
 </script>
 
 <style lang="scss" scoped>
-@import "SideBarAdmin.scss";
+@import "SidebarAdmin.scss";
 </style>
