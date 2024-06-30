@@ -25,8 +25,6 @@ import Invoice from "@/views/PageOrgan/Invoice/Invoice.vue"
 import Profile from "@/views/PageOrgan/Profile/Profile.vue"
 import Instructions from "@/views/PageOrgan/Instructions/Instructions.vue"
 
-// import store from "@/store"
-
 import OrganizationsList from '../components/Organization/OrganizationsList.vue'
 import UsersList from '../components/Organization/UsersList.vue'
 import registerUser from '../components/pageOrganization/registerUser.vue'

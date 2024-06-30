@@ -413,16 +413,16 @@ export default {
 }
 .userSearch .searchButton {
   padding: 10px 20px;
-  border: 1px solid #4caf50;
-  background-color: #4caf50;
+  border: 1px solid #40a9ff;
+  background-color: #40a9ff;
   color: white;
   border-radius: 0 4px 4px 0;
   cursor: pointer;
   transition: background-color 0.3s, border-color 0.3s;
 }
 .userSearch .searchButton:hover {
-  background-color: #45a049;
-  border-color: #45a049;
+  background-color: #1890ff;
+  border-color: #1890ff;
 }
 .pagination {
   display: flex;
@@ -473,11 +473,11 @@ export default {
   margin-right: 5px;
 }
 .navigation li.activeTab {
-  background-color: #4caf50;
+  background-color: #2e3a59;
   color: #fff;
 }
 .navigation li:not(.activeTab) {
-  background-color: #79d17c;
+  background-color: #606677;
   color: #fff;
 }
 .redButton,
@@ -565,7 +565,7 @@ h2 {
   margin-bottom: 20px;
   text-transform: uppercase;
   letter-spacing: 1px;
-  border-bottom: 2px solid #4caf50;
+  border-bottom: 2px solid #2e3a59;
   padding-bottom: 5px;
 }
 
@@ -587,7 +587,7 @@ h2 {
 .iconButton {
   background: none;
   border: none;
-  color: #4caf50;
+  color: #2e3a59;
   font-size: 30px;
   cursor: pointer;
   padding: 0;
@@ -598,7 +598,7 @@ h2 {
   margin-right: 5px;
 }
 .iconButton:hover {
-  color: #79d17c;
+  color: #606677;
 }
 .smallButton {
   margin-top: 5px;

@@ -497,7 +497,7 @@ h2 {
   margin-bottom: 20px;
   text-transform: uppercase;
   letter-spacing: 1px;
-  border-bottom: 2px solid #4caf50;
+  border-bottom: 2px solid #2e3a59;
   padding-bottom: 5px;
 }
 
@@ -510,7 +510,7 @@ h2 {
 }
 
 .navigation li {
-  background-color: #79d17c;
+  background-color: #606677;
   color: #fff;
   padding: 10px 20px;
   cursor: pointer;
@@ -520,7 +520,7 @@ h2 {
 }
 
 .navigation li.activeTab {
-  background-color: #4caf50;
+  background-color: #2e3a59;
 }
 
 .organizationList {
@@ -676,7 +676,7 @@ h2 {
 
 .search-bar input[type="text"]:focus {
   outline: none;
-  border-color: #4caf50;
+  border-color: #1890ff;
 }
 
 .search-bar input[type="text"]::placeholder {
@@ -685,8 +685,8 @@ h2 {
 
 .searchButton {
   padding: 10px 20px;
-  border: 1px solid #4caf50;
-  background-color: #4caf50;
+  border: 1px solid #40a9ff;
+  background-color: #40a9ff;
   color: white;
   border-radius: 0 4px 4px 0;
   cursor: pointer;
@@ -694,7 +694,7 @@ h2 {
 }
 
 .searchButton:hover {
-  background-color: #45a049;
+  background-color: #40a9ff;
 }
 
 .detailHeader {
