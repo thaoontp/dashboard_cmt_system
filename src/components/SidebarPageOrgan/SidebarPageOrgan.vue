@@ -24,11 +24,16 @@
         <span class="text">Home</span>
       </router-link>
 
-      <router-link to="/organization/register" class="button">
+      <!-- <router-link v-if="isLoggedIn" to="/organization/register" class="button">
         <span class="material-icons">
           <i class="fa-solid fa-user-plus"></i>
         </span>
         <span class="text">Register organization</span>
+      </router-link> -->
+
+      <router-link to="/pages/menu" class="button">
+        <span class="material-icons"><i class="fa-solid fa-book"></i></span>
+        <span class="text">Menu</span>
       </router-link>
 
       <router-link to="/pages/history" class="button">

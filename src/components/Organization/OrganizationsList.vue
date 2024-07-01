@@ -3,7 +3,7 @@
     <h2>Danh sách tổ chức</h2>
 
     <!-- Tabs navigation -->
-    <ul class="navigation">
+    <ul class="navigation" v-if="isLoggedIn">
       <li
         :class="{ activeTab: currentTab === 'all' }"
         @click="changeTab('all')"
@@ -36,7 +36,7 @@
       </li>
     </ul>
     <!-- Search bar -->
-    <div class="search-bar">
+    <div class="search-bar" v-if="isLoggedIn">
       <input
         type="text"
         v-model="searchKeyword"
@@ -46,7 +46,7 @@
       <button class="searchButton" @click="handleSearch">Tìm kiếm</button>
     </div>
     <!-- Organization Lists -->
-    <div v-if="isLogin">
+    <div v-if="isLoggedIn">
       <a-spin :spinning="isLoading">
         <div
           v-show="currentTab !== '' && filteredOrganizations.length > 0"
@@ -98,12 +98,17 @@
                 </template>
               </template>
               <template v-else-if="column.key === 'viewUsersAction'">
-                <button
-                  class="smallButton blueButton"
-                  @click="viewUsers(record)"
-                >
-                  Danh Sách Người Dùng
-                </button>
+                <template v-if="record.USER_COUNT === 0">
+                  <span class="no-users-status">Chưa có người dùng nào</span>
+                </template>
+                <template v-else>
+                  <button
+                    class="smallButton blueButton"
+                    @click="viewUsers(record)"
+                  >
+                    Danh Sách Người Dùng
+                  </button>
+                </template>
               </template>
               <template v-else-if="column.key === 'viewDetailAction'">
                 <button
@@ -134,6 +139,9 @@
           <p class="no-users">Không tìm thấy tổ chức phù hợp.</p>
         </div>
       </a-spin>
+    </div>
+    <div v-else class="denied">
+      <h3>Vui lòng đăng nhập để sử dụng dịch vụ...</h3>
     </div>
 
     <!-- Selected Organization Detail -->
@@ -194,6 +202,7 @@ import { Pagination, Spin, Table } from "ant-design-vue";
 import _ from "lodash";
 import moment from "moment";
 import Swal from "sweetalert2";
+import { mapState } from "vuex";
 import axiosClient from "../../api/axiosClient";
 
 export default {
@@ -205,7 +214,7 @@ export default {
   },
   data() {
     return {
-      isLogin: true,
+      isLogin: false,
       isLoading: false,
       debouncedHandleSearch: _.debounce(this.handleSearch, 900),
       columns: [
@@ -456,6 +465,7 @@ export default {
     },
   },
   computed: {
+    ...mapState(["isLoggedIn"]),
     currentTab() {
       return this.activeTab || "all";
     },
@@ -610,7 +620,7 @@ h2 {
 }
 
 .denied h3 {
-  color: #ff4d4f;
+  color: #000000;
 }
 
 @media screen and (max-width: 768px) {
@@ -728,5 +738,9 @@ h2 {
   color: #555;
   font-size: 18px;
   margin-top: 20px;
+}
+.no-users-status {
+  color: red;
+  font-style: italic;
 }
 </style>

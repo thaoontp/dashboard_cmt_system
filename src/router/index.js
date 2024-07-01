@@ -81,7 +81,7 @@ const routes = [
 		path: "/organization/register",
 		component: RegisterOrganization,
 		meta: {
-			layout: PageOrganLayout,
+			layout: AuthLayout,
 		}
 	},
 	{

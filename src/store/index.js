@@ -1,6 +1,6 @@
+import { message } from 'ant-design-vue';
 import { createStore } from 'vuex';
 import axios from '../api/axiosClient';
-import { message } from 'ant-design-vue';
 
 const store = createStore({
   state: {
@@ -153,7 +153,6 @@ const store = createStore({
           } else if (user.ROLE.IS_ORGANIZATION) {
             return 'organ';
           } else {
-            alert("Bạn không có quyền truy cập với tài khoản này.");
             return 'unauthorized';
           }
         }
