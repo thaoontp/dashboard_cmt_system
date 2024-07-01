@@ -23,9 +23,9 @@
                       </div>
 
                       <div class="group">
-                        <label for="username"
-                          ><i class="fa-solid fa-phone iconForm"></i
-                        ></label>
+                        <label for="username">
+                          <i class="fa-solid fa-phone iconForm"></i>
+                        </label>
                         <input
                           type="text"
                           id="username"
@@ -39,9 +39,9 @@
                       </div>
 
                       <div class="group2">
-                        <label for="password"
-                          ><i class="fa-solid fa-lock iconForm"></i
-                        ></label>
+                        <label for="password">
+                          <i class="fa-solid fa-lock iconForm"></i>
+                        </label>
                         <input
                           :type="showPassword ? 'text' : 'password'"
                           v-model="password"
@@ -94,7 +94,8 @@
       :footer="null"
       @cancel="handleCancel"
     >
-      <p>Bạn chưa phải tài khoản tổ chức, có muốn thực hiện đăng ký tổ chức?</p>
+      <p>Tài khoản không thuộc về tổ chức nào, bạn có muốn đăng ký tổ chức?</p>
+      <!-- <a-button @click="handleCancel">Tiếp tục đăng nhập</a-button> -->
       <a-button type="primary" @click="navigateToRegister"
         >Đăng ký tổ chức</a-button
       >
@@ -112,6 +113,7 @@ const username = ref("");
 const password = ref("");
 const showPassword = ref(false);
 const isModalVisible = ref(false);
+const userRole = ref(""); // Thêm biến này để lưu trữ vai trò của người dùng
 const router = useRouter();
 
 const toggleShowPassword = () => {
@@ -123,18 +125,13 @@ const login = async () => {
     username: username.value,
     password: password.value,
   });
-
   if (role === "admin") {
     router.push("/");
   } else if (role === "organ") {
     router.push("/pages/organizations");
-  } else {
+  } else if (role === "unauthorized") {
     isModalVisible.value = true;
   }
-};
-
-const handleOk = () => {
-  isModalVisible.value = false;
 };
 
 const handleCancel = () => {
