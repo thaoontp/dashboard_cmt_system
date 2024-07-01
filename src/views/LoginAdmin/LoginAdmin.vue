@@ -88,6 +88,17 @@
         </div>
       </div>
     </section>
+    <a-modal
+      v-model:open="isModalVisible"
+      title="Thông báo"
+      :footer="null"
+      @cancel="handleCancel"
+    >
+      <p>Bạn chưa phải tài khoản tổ chức, có muốn thực hiện đăng ký tổ chức?</p>
+      <a-button type="primary" @click="navigateToRegister"
+        >Đăng ký tổ chức</a-button
+      >
+    </a-modal>
   </div>
 </template>
 
@@ -100,6 +111,7 @@ const store = useStore();
 const username = ref("");
 const password = ref("");
 const showPassword = ref(false);
+const isModalVisible = ref(false);
 const router = useRouter();
 
 const toggleShowPassword = () => {
@@ -111,13 +123,28 @@ const login = async () => {
     username: username.value,
     password: password.value,
   });
-  if (role === 'admin') {
+
+  if (role === "admin") {
     router.push("/");
-  } else if (role === 'organ') {
+  } else if (role === "organ") {
     router.push("/pages/organizations");
+  } else {
+    isModalVisible.value = true;
   }
 };
 
+const handleOk = () => {
+  isModalVisible.value = false;
+};
+
+const handleCancel = () => {
+  isModalVisible.value = false;
+};
+
+const navigateToRegister = () => {
+  isModalVisible.value = false;
+  router.push("/organization/register");
+};
 </script>
 
 <style lang="scss" scoped>

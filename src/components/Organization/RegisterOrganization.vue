@@ -42,6 +42,7 @@
 </template>
 
 <script>
+import Swal from "sweetalert2";
 import axiosClient from "../../api/axiosClient";
 
 export default {
@@ -67,7 +68,14 @@ export default {
           this.form
         );
         if (response && response.data && response.data.success) {
-          alert("Organization registered successfully");
+          Swal.fire({
+            title: "Đăng ký thành công!",
+            text: "Tổ chức đã được đăng ký thành công.",
+            icon: "success",
+            confirmButtonText: "Trở về đăng nhập",
+          }).then(() => {
+            this.$router.push("/login");
+          });
           this.resetForm();
         } else if (response && response.data && response.data.message) {
           this.error = response.data.message;
