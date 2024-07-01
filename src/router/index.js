@@ -20,10 +20,10 @@ import PageOrganLayout from "@/layouts/PageOrganLayout/PageOrganLayout.vue"
 import store from "@/store"
 import HistoryPage from "@/views/PageOrgan/History/History.vue"
 import HomePageOrgan from "@/views/PageOrgan/HomePage/HomePage.vue"
-import MenuPage from "@/views/PageOrgan/Menu/Menu.vue"
-import Invoice from "@/views/PageOrgan/Invoice/Invoice.vue"
-import Profile from "@/views/PageOrgan/Profile/Profile.vue"
 import Instructions from "@/views/PageOrgan/Instructions/Instructions.vue"
+import Invoice from "@/views/PageOrgan/Invoice/Invoice.vue"
+import MenuPage from "@/views/PageOrgan/Menu/Menu.vue"
+import Profile from "@/views/PageOrgan/Profile/Profile.vue"
 
 import OrganizationsList from '../components/Organization/OrganizationsList.vue'
 import UsersList from '../components/Organization/UsersList.vue'
@@ -81,7 +81,7 @@ const routes = [
 		path: "/organization/register",
 		component: RegisterOrganization,
 		meta: {
-			layout: AdminLayout,
+			layout: PageOrganLayout,
 		}
 	},
 	{
