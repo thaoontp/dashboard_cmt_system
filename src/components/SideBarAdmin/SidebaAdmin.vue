@@ -56,7 +56,7 @@
         </div>
         <transition name="slide">
           <ul v-if="openKeys.includes('sub2')">
-            <li class="submenu-item">
+            <!-- <li class="submenu-item">
               <button
                 class="submenu-link"
                 :class="{ selected: current === 'register-organization' }"
@@ -67,7 +67,7 @@
               >
                 Register Organization
               </button>
-            </li>
+            </li> -->
             <li class="submenu-item">
               <button
                 class="submenu-link"
