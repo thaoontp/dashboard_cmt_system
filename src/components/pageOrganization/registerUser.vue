@@ -1,16 +1,16 @@
 <template>
   <div class="register-form">
-    <h2>Register</h2>
+    <h2>Đăng Ký Người Dùng</h2>
     <form @submit.prevent="handleSubmit" class="form">
       <div class="form-group">
-        <label for="USERNAME">Username: <span class="required">*</span></label>
+        <label for="USERNAME">Tài khoản: <span class="required">*</span></label>
         <input type="text" id="USERNAME" v-model="formData.USERNAME" />
         <p v-if="errors.USERNAME" class="error-message">
           {{ errors.USERNAME }}
         </p>
       </div>
       <div class="form-group">
-        <label for="PASSWORD">Password: <span class="required">*</span></label>
+        <label for="PASSWORD">Mật Khẩu: <span class="required">*</span></label>
         <div class="password-input-group">
           <input
             :type="showPassword ? 'text' : 'password'"
@@ -55,7 +55,7 @@
       </div>
       <div class="form-group">
         <label for="CONFIRM_PASSWORD"
-          >Confirm Password: <span class="required">*</span></label
+          >Xác Nhận Mật Khẩu: <span class="required">*</span></label
         >
         <div class="password-input-group">
           <input
@@ -103,7 +103,7 @@
         </p>
       </div>
       <div class="form-group">
-        <label for="FULLNAME">Full Name: <span class="required">*</span></label>
+        <label for="FULLNAME">Họ Tên: <span class="required">*</span></label>
         <input type="text" id="FULLNAME" v-model="formData.FULLNAME" />
         <p v-if="errors.FULLNAME" class="error-message">
           {{ errors.FULLNAME }}
@@ -131,12 +131,16 @@
         <p v-if="errors.otp" class="error-message">{{ errors.otp }}</p>
       </div>
       <div class="form-group">
-        <label for="ADDRESS">Address:</label>
+        <label for="ADDRESS">Địa Chỉ:</label>
         <input type="text" id="ADDRESS" v-model="formData.ADDRESS" />
       </div>
       <div class="form-group">
-        <label for="GENDER">Gender:</label>
-        <input type="text" id="GENDER" v-model="formData.GENDER" />
+        <label for="GENDER">Giới Tính:</label>
+        <select id="GENDER" v-model="formData.GENDER">
+          <option value="Male">Nam</option>
+          <option value="Female">Nữ</option>
+          <option value="Other">Khác</option>
+        </select>
       </div>
       <button type="submit">{{ showOTPField ? "Xác Thực" : "Đăng Ký" }}</button>
     </form>
@@ -520,5 +524,20 @@ button[type="submit"]:hover {
   width: 20px;
   height: 20px;
   fill: #888;
+}
+
+select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: border-color 0.3s;
+}
+
+select:focus {
+  border-color: #4caf50;
+  outline: none;
+  box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
 }
 </style>
