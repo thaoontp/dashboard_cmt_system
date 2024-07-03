@@ -164,8 +164,7 @@ const store = createStore({
           } else if (user.ROLE.IS_ORGANIZATION) {
             return "organ";
           } else {
-            alert("Bạn không có quyền truy cập với tài khoản này.");
-            return "unauthorized";
+            return 'unauthorized';
           }
         }
       } catch (error) {

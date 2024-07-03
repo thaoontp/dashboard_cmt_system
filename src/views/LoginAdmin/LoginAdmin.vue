@@ -23,9 +23,9 @@
                       </div>
 
                       <div class="group">
-                        <label for="username"
-                          ><i class="fa-solid fa-phone iconForm"></i
-                        ></label>
+                        <label for="username">
+                          <i class="fa-solid fa-phone iconForm"></i>
+                        </label>
                         <input
                           type="text"
                           id="username"
@@ -39,9 +39,9 @@
                       </div>
 
                       <div class="group2">
-                        <label for="password"
-                          ><i class="fa-solid fa-lock iconForm"></i
-                        ></label>
+                        <label for="password">
+                          <i class="fa-solid fa-lock iconForm"></i>
+                        </label>
                         <input
                           :type="showPassword ? 'text' : 'password'"
                           v-model="password"
@@ -88,6 +88,18 @@
         </div>
       </div>
     </section>
+    <a-modal
+      v-model:open="isModalVisible"
+      title="Thông báo"
+      :footer="null"
+      @cancel="handleCancel"
+    >
+      <p>Tài khoản không thuộc về tổ chức nào, bạn có muốn đăng ký tổ chức?</p>
+      <!-- <a-button @click="handleCancel">Tiếp tục đăng nhập</a-button> -->
+      <a-button type="primary" @click="navigateToRegister"
+        >Đăng ký tổ chức</a-button
+      >
+    </a-modal>
   </div>
 </template>
 
@@ -100,6 +112,8 @@ const store = useStore();
 const username = ref("");
 const password = ref("");
 const showPassword = ref(false);
+const isModalVisible = ref(false);
+const userRole = ref(""); // Thêm biến này để lưu trữ vai trò của người dùng
 const router = useRouter();
 
 const toggleShowPassword = () => {
@@ -111,13 +125,23 @@ const login = async () => {
     username: username.value,
     password: password.value,
   });
-  if (role === 'admin') {
+  if (role === "admin") {
     router.push("/");
-  } else if (role === 'organ') {
+  } else if (role === "organ") {
     router.push("/pages/organizations");
+  } else if (role === "unauthorized") {
+    isModalVisible.value = true;
   }
 };
 
+const handleCancel = () => {
+  isModalVisible.value = false;
+};
+
+const navigateToRegister = () => {
+  isModalVisible.value = false;
+  router.push("/organization/register");
+};
 </script>
 
 <style lang="scss" scoped>

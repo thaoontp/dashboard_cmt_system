@@ -26,7 +26,7 @@
       <div
         class="col-sm-3 d-none d-sm-flex align-items-center justify-content-sm-end"
       >
-        <div v-if="isLoggedIn" class="login-button">
+        <div v-if="isLoggedIn">
           <span>{{ userInfo?.USERNAME }}</span>
         </div>
         <div v-else @click="navigateToLogin" class="login-button">

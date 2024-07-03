@@ -23,10 +23,19 @@
         ></span>
         <span class="text">Home</span>
       </router-link>
+
+      <!-- <router-link v-if="isLoggedIn" to="/organization/register" class="button">
+        <span class="material-icons">
+          <i class="fa-solid fa-user-plus"></i>
+        </span>
+        <span class="text">Register organization</span>
+      </router-link> -->
+
       <router-link to="/pages/menu" class="button">
         <span class="material-icons"><i class="fa-solid fa-book"></i></span>
         <span class="text">Menu</span>
       </router-link>
+
       <router-link to="/pages/history" class="button">
         <span class="material-icons">
           <i class="fa-solid fa-clock-rotate-left"></i>
@@ -41,22 +50,10 @@
       </router-link>
       <router-link v-if="isLoggedIn" to="/pages/instructions" class="button">
         <span class="material-icons"
-          ><i class="fa-solid fa-chalkboard-user"></i></span>
+          ><i class="fa-solid fa-chalkboard-user"></i
+        ></span>
         <span class="text">Instructions</span>
       </router-link>
-      <!-- <router-link to="/pages/registerUser" class="button">
-        <span class="material-icons">
-          <i class="fa-solid fa-user-plus"></i>
-        </span>
-        <span class="text">Register</span>
-      </router-link> -->
-
-      <!-- <router-link v-else to="/login" class="button">
-        <span class="material-icons"
-          ><i class="fa-solid fa-user-circle"></i
-        ></span>
-        <span class="text">Profile</span>
-      </router-link> -->
 
       <router-link v-if="isAdmin" to="/" class="button">
         <span class="material-icons">

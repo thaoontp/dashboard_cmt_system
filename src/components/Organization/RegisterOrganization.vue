@@ -11,7 +11,7 @@
           required
         />
       </div>
-      <div>
+      <!-- <div>
         <label for="organizationEmail">Organization Email:</label>
         <input
           type="email"
@@ -19,7 +19,7 @@
           id="organizationEmail"
           required
         />
-      </div>
+      </div> -->
       <div>
         <label for="organizationPhone">Organization Phone:</label>
         <input
@@ -42,6 +42,7 @@
 </template>
 
 <script>
+import Swal from "sweetalert2";
 import axiosClient from "../../api/axiosClient";
 
 export default {
@@ -49,7 +50,7 @@ export default {
     return {
       form: {
         ORGANIZATION_NAME: "",
-        ORGANIZATION_EMAIL: "",
+        //ORGANIZATION_EMAIL: "",
         ORGANIZATION_PHONE: "",
       },
       error: null,
@@ -67,7 +68,14 @@ export default {
           this.form
         );
         if (response && response.data && response.data.success) {
-          alert("Organization registered successfully");
+          Swal.fire({
+            title: "Đăng ký thành công!",
+            text: "Tổ chức đã được đăng ký thành công.",
+            icon: "success",
+            confirmButtonText: "Trở về đăng nhập",
+          }).then(() => {
+            this.$router.push("/login");
+          });
           this.resetForm();
         } else if (response && response.data && response.data.message) {
           this.error = response.data.message;
@@ -95,7 +103,7 @@ export default {
     resetForm() {
       this.form = {
         ORGANIZATION_NAME: "",
-        ORGANIZATION_EMAIL: "",
+        // ORGANIZATION_EMAIL: "",
         ORGANIZATION_PHONE: "",
       };
     },
