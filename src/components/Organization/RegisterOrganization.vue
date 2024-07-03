@@ -11,7 +11,7 @@
           required
         />
       </div>
-      <div>
+      <!-- <div>
         <label for="organizationEmail">Organization Email:</label>
         <input
           type="email"
@@ -19,7 +19,7 @@
           id="organizationEmail"
           required
         />
-      </div>
+      </div> -->
       <div>
         <label for="organizationPhone">Organization Phone:</label>
         <input
@@ -50,7 +50,7 @@ export default {
     return {
       form: {
         ORGANIZATION_NAME: "",
-        ORGANIZATION_EMAIL: "",
+        //ORGANIZATION_EMAIL: "",
         ORGANIZATION_PHONE: "",
       },
       error: null,
@@ -103,7 +103,7 @@ export default {
     resetForm() {
       this.form = {
         ORGANIZATION_NAME: "",
-        ORGANIZATION_EMAIL: "",
+        // ORGANIZATION_EMAIL: "",
         ORGANIZATION_PHONE: "",
       };
     },
