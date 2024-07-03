@@ -14,7 +14,7 @@
   }
 
   .listCard {
-    border-radius: 10px;
+    border-radius: 10px;    
   }
   
   .cardInfo {
@@ -56,6 +56,10 @@
   }
   
   .rightCard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;;
     margin: auto 0px auto 2px;
   
     .numberCard {
@@ -66,6 +70,7 @@
     }
   
     .nameCard {
+      text-align: center;
         font-size: 15px;
         color: #000;
     }
