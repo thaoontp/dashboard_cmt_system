@@ -12,6 +12,9 @@ const store = createStore({
     users: [],
   },
   mutations: {
+    SET_USER_INFO(state, userInfo) {
+      state.userInfo = userInfo;
+    },
     SET_LOGIN_STATE(state, userInfo) {
       state.isLoggedIn = true;
       state.userInfo = userInfo;

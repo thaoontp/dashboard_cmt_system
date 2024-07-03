@@ -4,7 +4,7 @@
       <template #title>
         <div class="profile-title">
           <label for="avatarInput">
-            <a-avatar :src="avatarUrl" size="large" class="avatar"/> <!-- Hiển thị avatar nếu có -->
+            <!-- <a-avatar :src="avatarUrl" size="large" class="avatar"/> Hiển thị avatar nếu có -->
             <h4>{{ userInfo?.USERNAME }}</h4> <!-- Hoặc sử dụng tên đăng nhập từ userInfo -->
           </label>
           <input id="avatarInput" type="file" style="display: none;" ref="fileInput" @change="handleFileUpload">
@@ -33,7 +33,6 @@
             <p><strong>Địa chỉ:</strong> {{ editing ? '' : userInfo?.ADDRESS }}</p>
             <a-input v-if="editing" v-model="editData.ADDRESS" />
           </div>
-          <!-- Thêm các thông tin khác của người dùng -->
         </a-col>
       </a-row>
       <a-button v-if="!editing" type="primary" class="edit-button" @click="editProfile">Chỉnh sửa</a-button>
@@ -63,13 +62,17 @@ export default {
       // Chuyển sang chế độ chỉnh sửa
       this.editing = true;
       // Sao chép dữ liệu người dùng hiện tại vào editData để chỉnh sửa
-      this.editData = { ...this.userInfo };
+      // this.editData = { ...this.userInfo };
     },
-    saveProfile() {
-      // Gọi API để lưu thông tin chỉnh sửa
-      this.updateUserInfo(this.editData);
-      // Chuyển trở lại chế độ xem thông tin
-      this.editing = false;
+    async saveProfile() {
+      try {
+        const response = await axiosClient.put('/user/updateUser', this.editData);
+        console.log('Cập nhật thông tin thành công:', response.data);
+        this.getUserInfo();
+        this.editing = false;
+      } catch (error) {
+        console.error('Lỗi cập nhật thông tin:', error);
+      }
     },
     async updateUserInfo(updatedData) {
       try {

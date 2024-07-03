@@ -28,7 +28,8 @@
     "vuex": "^4.1.0"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^2.2.0",
+    "@babel/plugin-transform-react-jsx": "^7.24.7",
+    "@vitejs/plugin-vue": "^2.3.4",
     "@vue/babel-preset-jsx": "^1.4.0",
     "sass": "^1.49.8",
     "vite": "^2.9.18",
