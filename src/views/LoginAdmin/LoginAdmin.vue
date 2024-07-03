@@ -33,7 +33,7 @@
                           v-model="username"
                           name="username"
                           autocomplete="off"
-                          placeholder="Nhập username"
+                          placeholder="Nhập tên tài khoản hoặc email"
                           required
                         />
                       </div>
@@ -62,7 +62,7 @@
                         </div>
                       </div>
                       <div class="pt-1 mb-4">
-                        <button class="btnPay">Login</button>
+                        <button class="btnPay">Đăng Nhập</button>
                       </div>
 
                       <a class="small text-muted" href="#!">Quên mật khẩu</a>

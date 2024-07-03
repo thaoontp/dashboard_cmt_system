@@ -19,12 +19,17 @@
       <a-row class="profile-info">
         <a-col :span="24">
           <div class="info-item">
-            <p><strong>Tên đăng nhập: </strong> {{ userInfo?.USERNAME }}</p>
+            <p>
+              <strong>Tên đăng nhập:</strong>
+              <span class="content">{{ userInfo?.USERNAME }}</span>
+            </p>
           </div>
           <div class="info-item">
             <p>
               <strong>Họ và tên:</strong>
-              <template v-if="!editing">{{ userInfo?.FULLNAME }}</template>
+              <template v-if="!editing"
+                ><span class="content">{{ userInfo?.FULLNAME }}</span></template
+              >
               <a-input
                 v-else
                 :value="editData.FULLNAME"
@@ -34,30 +39,27 @@
           </div>
           <div class="info-item">
             <p>
-              <strong>Giới tính: {{ msg }}</strong>
-              <template v-if="!editing">{{ userInfo?.GENDER }}</template>
-              <a-input
+              <strong>Giới tính:</strong>
+              <template v-if="!editing"
+                ><span class="content">{{ userInfo?.GENDER }}</span></template
+              >
+              <a-select
                 v-else
                 :value="editData.GENDER"
-                @input="updateEditData('GENDER', $event.target.value)"
-              />
+                @change="updateEditData('GENDER', $event)"
+              >
+                <a-select-option value="Male">Male</a-select-option>
+                <a-select-option value="Female">Female</a-select-option>
+                <a-select-option value="Other">Other</a-select-option>
+              </a-select>
             </p>
           </div>
-          <!-- <div class="info-item">
-            <p>
-              <strong>Email: {{ msg }}</strong>
-              <template v-if="!editing">{{ userInfo?.EMAIL }}</template>
-              <a-input
-                v-else
-                :value="editData.EMAIL"
-                @input="updateEditData('EMAIL', $event.target.value)"
-              />
-            </p>
-          </div> -->
           <div class="info-item">
             <p>
-              <strong>Địa chỉ: {{ msg }}</strong>
-              <template v-if="!editing">{{ userInfo?.ADDRESS }}</template>
+              <strong>Địa chỉ:</strong>
+              <template v-if="!editing"
+                ><span class="content">{{ userInfo?.ADDRESS }}</span></template
+              >
               <a-input
                 v-else
                 :value="editData.ADDRESS"
@@ -268,5 +270,23 @@ export default {
   .profile-card {
     width: 100%;
   }
+}
+select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: border-color 0.3s;
+}
+
+select:focus {
+  border-color: #4caf50;
+  outline: none;
+  box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+}
+
+.content {
+  margin-left: 8px;
 }
 </style>

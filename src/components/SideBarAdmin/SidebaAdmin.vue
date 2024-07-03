@@ -17,7 +17,7 @@
                   navigateTo('/');
                 "
               >
-                Home Page
+                Trang Chủ
               </button>
             </li>
             <li class="submenu-item">
@@ -29,7 +29,7 @@
                   navigateTo('/user');
                 "
               >
-                User
+                Quản Lý Người Dùng
               </button>
             </li>
             <li class="submenu-item">
@@ -41,7 +41,7 @@
                   navigateTo('/package');
                 "
               >
-                Package
+                Quản Lý Gói
               </button>
             </li>
           </ul>
@@ -52,7 +52,7 @@
           <span class="material-icons"
             ><i class="fa-solid fa-building"></i
           ></span>
-          Organization
+          Quản Lý Tổ Chức
         </div>
         <transition name="slide">
           <ul v-if="openKeys.includes('sub2')">
@@ -77,7 +77,7 @@
                   navigateTo('/organization/getOrganization');
                 "
               >
-                Organization List
+                Danh Sách Tổ Chức
               </button>
             </li>
           </ul>
@@ -86,7 +86,7 @@
       <li :class="['menu-item', { selected: openKeys.includes('sub4') }]">
         <div @click="toggleSubmenu('sub4')">
           <span class="material-icons"><i class="fa-solid fa-cog"></i></span>
-          Setting
+          Cài Đặt
         </div>
         <transition name="slide">
           <ul v-if="openKeys.includes('sub4')">
@@ -112,7 +112,7 @@
         <span class="material-icons">
           <i class="fa-solid fa-pager"></i>
         </span>
-        <span class="text">Page Organ</span>
+        <span class="text">Trang Tổ Chức</span>
       </router-link>
     </div>
 
@@ -122,7 +122,7 @@
           <span class="material-icons">
             <i class="fa-solid fa-right-to-bracket"></i>
           </span>
-          <span class="text">Login</span>
+          <span class="text">Đăng Nhập</span>
         </router-link>
       </div>
 
@@ -131,7 +131,7 @@
           <span class="material-icons">
             <i class="fa-solid fa-right-from-bracket"></i>
           </span>
-          <span class="text">Logout</span>
+          <span class="text">Đăng Xuất</span>
         </div>
         <div v-if="isModal" class="modal-overlay">
           <a-modal
