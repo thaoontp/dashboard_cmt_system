@@ -4,115 +4,197 @@
       <template #title>
         <div class="profile-title">
           <label for="avatarInput">
-            <a-avatar :src="avatarUrl" size="large" class="avatar"/> <!-- Hiển thị avatar nếu có -->
-            <h4>{{ userInfo?.USERNAME }}</h4> <!-- Hoặc sử dụng tên đăng nhập từ userInfo -->
+            <a-avatar :src="avatarUrl" size="large" class="avatar" />
+            <h4>{{ userInfo?.USERNAME }}</h4>
           </label>
-          <input id="avatarInput" type="file" style="display: none;" ref="fileInput" @change="handleFileUpload">
+          <input
+            id="avatarInput"
+            type="file"
+            style="display: none"
+            ref="fileInput"
+            @change="handleFileUpload"
+          />
         </div>
-        
-        <!-- <hr> -->
       </template>
       <a-row class="profile-info">
         <a-col :span="24">
-          <div class="info-item"> 
-            <p><strong>Tên đăng nhập:</strong> {{ userInfo?.USERNAME }}</p>
+          <div class="info-item">
+            <p><strong>Tên đăng nhập: </strong> {{ userInfo?.USERNAME }}</p>
           </div>
           <div class="info-item">
-            <p><strong>Họ và tên:</strong> {{ editing ? '' : userInfo?.FULLNAME }}</p>
-            <a-input v-if="editing" v-model="editData.FULLNAME" />
+            <p>
+              <strong>Họ và tên:</strong>
+              <template v-if="!editing">{{ userInfo?.FULLNAME }}</template>
+              <a-input
+                v-else
+                :value="editData.FULLNAME"
+                @input="updateEditData('FULLNAME', $event.target.value)"
+              />
+            </p>
           </div>
           <div class="info-item">
-            <p><strong>Giới tính:</strong> {{ editing ? '' : userInfo?.GENDER }}</p>
-            <a-input v-if="editing" v-model="editData.GENDER" />
+            <p>
+              <strong>Giới tính: {{ msg }}</strong>
+              <template v-if="!editing">{{ userInfo?.GENDER }}</template>
+              <a-input
+                v-else
+                :value="editData.GENDER"
+                @input="updateEditData('GENDER', $event.target.value)"
+              />
+            </p>
           </div>
+          <!-- <div class="info-item">
+            <p>
+              <strong>Email: {{ msg }}</strong>
+              <template v-if="!editing">{{ userInfo?.EMAIL }}</template>
+              <a-input
+                v-else
+                :value="editData.EMAIL"
+                @input="updateEditData('EMAIL', $event.target.value)"
+              />
+            </p>
+          </div> -->
           <div class="info-item">
-            <p><strong>Email:</strong> {{ editing ? '' : userInfo?.EMAIL }}</p>
-            <a-input v-if="editing" v-model="editData.EMAIL" />
+            <p>
+              <strong>Địa chỉ: {{ msg }}</strong>
+              <template v-if="!editing">{{ userInfo?.ADDRESS }}</template>
+              <a-input
+                v-else
+                :value="editData.ADDRESS"
+                @input="updateEditData('ADDRESS', $event.target.value)"
+              />
+            </p>
           </div>
-          <div class="info-item">
-            <p><strong>Địa chỉ:</strong> {{ editing ? '' : userInfo?.ADDRESS }}</p>
-            <a-input v-if="editing" v-model="editData.ADDRESS" />
-          </div>
-          <!-- Thêm các thông tin khác của người dùng -->
         </a-col>
       </a-row>
-      <a-button v-if="!editing" type="primary" class="edit-button" @click="editProfile">Chỉnh sửa</a-button>
-      <a-button v-if="editing" type="primary" class="save-button" @click="saveProfile">Lưu</a-button>
+      <div class="action-buttons">
+        <a-button
+          v-if="!editing"
+          type="primary"
+          class="edit-button"
+          @click="editProfile"
+          >Chỉnh sửa</a-button
+        >
+        <a-button
+          v-if="editing"
+          type="primary"
+          class="save-button"
+          @click="saveProfile"
+          >Lưu</a-button
+        >
+        <a-button v-if="editing" class="cancel-button" @click="cancelEdit"
+          >Hủy</a-button
+        >
+      </div>
     </a-card>
   </div>
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex';
-import axiosClient from '../../../api/axiosClient';
+import { mapActions, mapState } from "vuex";
+import axiosClient from "../../../api/axiosClient";
 
 export default {
   data() {
     return {
       avatarUrl: null,
-      editing: false, // Biến để kiểm tra trạng thái chỉnh sửa
-      editData: {}, // Khởi tạo biến lưu trữ URL của avatar
+      editing: false,
+      editData: {
+        FULLNAME: "",
+        // EMAIL: "",
+        ADDRESS: "",
+        GENDER: "",
+      },
+      originalData: {}, // Store original user data
     };
   },
   computed: {
-    ...mapState(['userInfo'])
+    ...mapState(["userInfo"]),
   },
   methods: {
-    ...mapActions(['getUserInfo']),
+    ...mapActions(["getUserInfo"]),
     editProfile() {
-      // Chuyển sang chế độ chỉnh sửa
+      // Copy userInfo to originalData when starting edit
+      this.originalData = { ...this.userInfo };
+      // Initialize editData with current user info
+      this.editData = {
+        FULLNAME: this.userInfo.FULLNAME,
+        // EMAIL: this.userInfo.EMAIL,
+        ADDRESS: this.userInfo.ADDRESS,
+        GENDER: this.userInfo.GENDER,
+      };
       this.editing = true;
-      // Sao chép dữ liệu người dùng hiện tại vào editData để chỉnh sửa
-      this.editData = { ...this.userInfo };
     },
-    saveProfile() {
-      // Gọi API để lưu thông tin chỉnh sửa
-      this.updateUserInfo(this.editData);
-      // Chuyển trở lại chế độ xem thông tin
-      this.editing = false;
-    },
-    async updateUserInfo(updatedData) {
+    async saveProfile() {
       try {
-        const response = await axiosClient.put('/api/user/update', updatedData);
-        console.log('Cập nhật thông tin thành công:', response.data);
-        // Cập nhật lại thông tin trong Vuex store nếu cần thiết
-        // this.getUserInfo(); // Cập nhật lại thông tin người dùng từ server
+        const filteredEditData = this.filterEmptyFields(this.editData);
+        console.log("Dữ liệu gửi đi:", filteredEditData);
+        const updatedUser = await this.updateUserInfo(filteredEditData);
+        console.log("Cập nhật thông tin thành công:", updatedUser);
+        await this.getUserInfo();
+        this.editing = false;
       } catch (error) {
-        console.error('Lỗi cập nhật thông tin:', error);
-        // Xử lý khi cập nhật thất bại
+        console.error(
+          "Lỗi cập nhật thông tin:",
+          error.response?.data?.message || error.message
+        );
       }
     },
-
+    filterEmptyFields(data) {
+      return Object.keys(data)
+        .filter((key) => data[key] !== null && data[key] !== "")
+        .reduce((acc, key) => {
+          acc[key] = data[key];
+          return acc;
+        }, {});
+    },
+    async updateUserInfo(updatedUser) {
+      try {
+        const response = await axiosClient.put("/user/updateUser", updatedUser);
+        return response.data;
+      } catch (error) {
+        console.error(
+          "Lỗi cập nhật thông tin:",
+          error.response?.data?.message || error.message
+        );
+        throw error;
+      }
+    },
     handleFileUpload(event) {
       const file = event.target.files[0];
       this.uploadAvatar(file);
     },
-
     async uploadAvatar(file) {
       const formData = new FormData();
-      formData.append('AVATAR', file);
+      formData.append("AVATAR", file);
 
       try {
-        const response = await axiosClient.post('/azure/upload', formData, {
+        const response = await axiosClient.post("/azure/upload", formData, {
           headers: {
-            'Content-Type': 'multipart/form-data'
-          }
+            "Content-Type": "multipart/form-data",
+          },
         });
 
-        // Cập nhật URL avatar sau khi upload thành công
         this.avatarUrl = response.data.imageUrl;
-        console.log('Upload thành công:', response.data);
+        console.log("Upload thành công:", response.data);
       } catch (error) {
-        console.error('Lỗi upload avatar:', error);
-        // Xử lý khi upload thất bại
+        console.error("Lỗi upload avatar:", error);
       }
-    }
+    },
+    updateEditData(field, value) {
+      this.editData[field] = value;
+    },
+    cancelEdit() {
+      // Restore original data
+      this.editData = { ...this.originalData };
+      this.editing = false;
+    },
   },
   mounted() {
     if (!this.userInfo) {
       this.getUserInfo();
     }
-  }
+  },
 };
 </script>
 
@@ -127,11 +209,10 @@ export default {
 .profile-card {
   width: 80%;
   margin-top: 20px;
-  background-color: #70c2b4b8; /* Màu nền card */
+  background-color: #f0f2f5;
   padding: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Đổ bóng card */
-  border-radius: 8px; /* Bo tròn góc card */
-  position: relative; /* Để có thể sử dụng absolute cho nút chỉnh sửa */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
 }
 
 .profile-title {
@@ -140,16 +221,17 @@ export default {
   justify-content: center;
   gap: 10px;
   text-align: center;
+  margin-bottom: 20px;
 }
 
 .avatar {
   margin-bottom: 10px;
 }
 
-.profile-title h2 {
+.profile-title h4 {
   margin-bottom: 0;
-  font-size: 24px;
-  color: #1890ff; /* Màu sắc cho tiêu đề */
+  font-size: 20px;
+  color: #1890ff;
 }
 
 .profile-info {
@@ -159,30 +241,32 @@ export default {
 .info-item {
   margin-bottom: 10px;
   font-size: 16px;
-  text-align: center; /* Căn giữa nội dung trong info-item */
+  text-align: left;
 }
 
 .info-item p {
   margin-bottom: 5px;
-  color: #333; /* Màu sắc cho nội dung thông tin */
+  color: #333;
 }
 
 .info-item strong {
   font-weight: bold;
 }
 
-.edit-button {
-  position: absolute;
-  /* top: 20px; */
-  right: 20px;
-}
-.save-button {
-  position: absolute;
-  right: 100px; /* Để nút lưu nằm bên trái nút chỉnh sửa */
+.edit-button,
+.save-button,
+.cancel-button {
+  margin-top: 20px;
+  margin-right: 10px;
 }
 
-a-button[type="primary"] { 
-  margin-top: 20px;
+.action-buttons {
+  text-align: right;
+}
+
+@media screen and (max-width: 768px) {
+  .profile-card {
+    width: 100%;
+  }
 }
 </style>
-

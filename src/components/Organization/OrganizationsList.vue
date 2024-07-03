@@ -161,10 +161,10 @@
           <strong>Tên tổ chức:</strong>
           {{ selectedOrganization.ORGANIZATION_NAME }}
         </p>
-        <p>
+        <!-- <p>
           <strong>Email tổ chức:</strong>
           {{ selectedOrganization.ORGANIZATION_EMAIL }}
-        </p>
+        </p> -->
         <p>
           <strong>Điện thoại tổ chức:</strong>
           {{ selectedOrganization.ORGANIZATION_PHONE }}
