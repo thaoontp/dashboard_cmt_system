@@ -21,7 +21,7 @@
         <span class="material-icons"
           ><i class="fa-solid fa-house icon"></i
         ></span>
-        <span class="text">Home</span>
+        <span class="text">Trang Chủ</span>
       </router-link>
 
       <!-- <router-link v-if="isLoggedIn" to="/organization/register" class="button">
@@ -33,34 +33,34 @@
 
       <router-link to="/pages/menu" class="button">
         <span class="material-icons"><i class="fa-solid fa-book"></i></span>
-        <span class="text">Menu</span>
+        <span class="text">Mua Gói</span>
       </router-link>
 
       <router-link to="/pages/history" class="button">
         <span class="material-icons">
           <i class="fa-solid fa-clock-rotate-left"></i>
         </span>
-        <span class="text">History</span>
+        <span class="text">Lịch Sử Giao Dịch</span>
       </router-link>
       <router-link v-if="isLoggedIn" to="/pages/profile" class="button">
         <span class="material-icons"
           ><i class="fa-solid fa-user-circle"></i
         ></span>
-        <span class="text">Profile</span>
+        <span class="text">Thông tin tài khoản</span>
       </router-link>
       <router-link v-if="isLoggedIn" to="/pages/instructions" class="button">
         <span class="material-icons"
           ><i class="fa-solid fa-chalkboard-user"></i
         ></span>
-        <span class="text">Instructions</span>
+        <span class="text">Hướng Dẫn Sử Dụng</span>
       </router-link>
 
-      <router-link v-if="isAdmin" to="/" class="button">
+      <!-- <router-link v-if="isAdmin" to="/" class="button">
         <span class="material-icons">
           <i class="fa-solid fa-pager"></i>
         </span>
         <span class="text">Dashboard Admin</span>
-      </router-link>
+      </router-link> -->
     </div>
     <div class="flex"></div>
     <div class="menu" @click="showModal">
@@ -68,7 +68,7 @@
         <span class="material-icons"
           ><i class="fa-solid fa-right-from-bracket"></i
         ></span>
-        <span class="text">Logout</span>
+        <span class="text">Đăng Xuất</span>
       </div>
       <a-modal
         title="Đăng xuất"
